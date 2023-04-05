@@ -1,8 +1,8 @@
-# SQL Editor
+# VaultDB Workbench
 
-### [Live Version](https://vaultdb.ai/workbench/)
+### [Live Version](http://vaultdb-hosted-content.s3-website.us-east-2.amazonaws.com/workbench/index.html)
 
-A Web App For Basic SQL editor view to demonstrate where your users can query easily on a table using SQL and have ui components for the functionalities that can be added.
+A Web App to query VaultDB
 
 ## Requirements
 
@@ -16,7 +16,7 @@ A Web App For Basic SQL editor view to demonstrate where your users can query ea
 
 ## How to run:
 
-1. [Download](https://github.com/sagarchoudhary96/react-sql-editor/archive/refs/heads/master.zip) or [Clone](https://github.com/sagarchoudhary96/react-sql-editor.git) the Repository.
+1. [Clone](https://github.com/vaultdbai/workbench.git) the Repository.
 
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted
 $env:NODE_OPTIONS = "--openssl-legacy-provider"
