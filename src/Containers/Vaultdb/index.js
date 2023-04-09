@@ -31,12 +31,7 @@ const Vaultdb = () => {
    * and updating store/context if required */
   const handleOnQueryRun = useCallback((query) => {
 
-    const payload = {
-      database: "test1",
-      query: query
-    };
-
-    invokeLambdaFunction('vaultdb-execute-query', payload).then((result) => {
+    invokeLambdaFunction('vaultdb-execute-query', query).then((result) => {
         if (result.data) {
           tablesData["result"] = {
               metaData: {
