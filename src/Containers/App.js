@@ -23,11 +23,10 @@ function App() {
   const handleSignIn = useCallback(cognitoUser => {
     const idToken = cognitoUser?.signInUserSession?.idToken;
 
-    if (!idToken) return;
-
+    if (!idToken) return;    
+    console.log(idToken);
     Configration.setUserCredentials(idToken);
-    setAuthState({ authenticated: true });
-
+    setAuthState({ authenticated: true });    
   }, []);
 
   useEffect(() => {

@@ -14,13 +14,10 @@ const AppContext = React.createContext(null);
 export const AppContextProvider = ({ children }) => {
 
   const [tableSchema, SetTableSchema] = useState({});
+  
+  const query = "select t.table_name, c.column_name from information_schema.tables t, information_schema.columns c where t.table_name=c.table_name";
 
-  const payload = {
-    database: "test1",
-    query: "select t.table_name, c.column_name from system.tables t, system.columns c where t.table_name=c.table_name"
-  };
-
-  invokeLambdaFunction('vaultdb-execute-query', payload).then((result) => {
+  invokeLambdaFunction('vaultdb-execute-query', query ).then((result) => {
     console.log("got results:", result)
     if (result.data) {
       const tableresult = {};

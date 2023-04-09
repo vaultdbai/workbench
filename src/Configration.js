@@ -11,6 +11,10 @@ const Configration = (function() {
     return application;    // Or pull this from cookie/localStorage
   };
 
+  var getToken = function() {
+    return user.jwt;    // return jwt token
+  };
+
   var configure = function(name, region, poolid, clientid, identity_pool) {
     application = name;
     userPoolId = poolid;
@@ -46,6 +50,7 @@ const Configration = (function() {
 
   return {
     getName: getName,
+    getToken: getToken,
     configure: configure,
     setUserCredentials
   };  

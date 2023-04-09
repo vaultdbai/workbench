@@ -3,12 +3,9 @@ import { invokeLambdaFunction } from "utils/lambdaFunctions";
 async function getTables(applicationname) {
   try {
     // POST request using fetch with error handling
-    const payload = {
-      database: "test1",
-      query: "select t.table_name, c.column_name from system.tables t, system.columns c where t.table_name=c.table_name"
-    };
+    const query = "select t.table_name, c.column_name from information_schema.tables t, information_schema.columns c where t.table_name=c.table_name";
 
-    const result = await invokeLambdaFunction('vaultdb-execute-query', payload)
+    const result = await invokeLambdaFunction('vaultdb-execute-query', query)
     
     console.log(result);
 
