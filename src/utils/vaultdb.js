@@ -7,27 +7,33 @@ async function getTables(applicationname) {
 
     const result = await invokeLambdaFunction('vaultdb-execute-query', query)
     
-    console.log(result);
-
     const tableresult = {};
-    result.data.Rows.forEach((row) => {
-      const tableName = row.Row[0].value;
-      if (tableName in tableresult) {
-        tableresult[tableName].metaData.columns.push({ name: row.Row[1].value, type: 'varchar' });
-      } else {
-        tableresult[tableName] = {
-          metaData: {
-            tableName,
-            columns: [{ name: row.Row[1].value, type: 'varchar' }]
-          },
-          rows: [],
-        };
-      };
-    });
-
+    if (result.Payload) {
+      const tabledata = JSON.parse(result.Payload);
+      if (tabledata.data) {
+        const data = JSON.parse(tabledata.data);
+        for (var i=0; i<data.length; i++) {
+          var tableName = data[i].table_name; 
+          var column_name = data[i].column_name;
+          if (tableName in tableresult) {
+            tableresult[tableName].metaData.columns.push({ name: column_name, type: 'varchar' });
+          }
+          else {
+            tableresult[tableName] = {
+              metaData: {
+                tableName,
+                columns: [{ name: column_name, type: 'varchar' }]
+              },
+              rows: [],
+            };
+          }
+        }
+      }
+    }    
+    console.log("got tableresult:", tableresult)
     return tableresult;
-
-  } catch (e) {
+  } catch (error) {
+    console.error(error);
     return null;
   }
 }

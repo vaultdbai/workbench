@@ -1,4 +1,3 @@
-import React from "react";
 import App from "Containers/App";
 import reportWebVitals from "./reportWebVitals";
 import ThemeProvider from "@mui/styles/ThemeProvider";
