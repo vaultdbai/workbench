@@ -2,13 +2,14 @@ import Configration from "Configration";
 import Home from "Containers/Home";
 import ErrorBoundary from "Components/ErrorBoundary";
 import { AppContextProvider } from "context/AppContext";
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Auth } from "aws-amplify";
 import { Authenticator } from "@aws-amplify/ui-react";
-
-import { getTables } from "utils/vaultdb";
+import { Routes, Route, useNavigate } from "react-router-dom";
+import { getTablesMetaData } from "utils/vaultdb";
 
 import "@aws-amplify/ui-react/styles.css";
+import PageNotFound from "Components/PageNotFound";
 
 // Configure application
 Configration.configure(
@@ -24,6 +25,8 @@ function App() {
 
   const [metaDataState, setMetaDataState] = useState({});
 
+  const navigate = useNavigate();
+
   const handleSignIn = useCallback(async (cognitoUser) => {
     const idToken = cognitoUser?.signInUserSession?.idToken;
 
@@ -31,17 +34,23 @@ function App() {
     console.log(idToken);
     Configration.setUserCredentials(idToken);
     setAuthState({ authenticated: true });
-    setMetaDataState(await getTables());
+    setMetaDataState(await getTablesMetaData());
   }, []);
 
   useEffect(() => {
     Auth.currentAuthenticatedUser()
-      .then((user) => handleSignIn(user))
-      .catch(() => setAuthState({ authenticated: false }));
+      .then((user) => {
+        handleSignIn(user);
+      })
+      .catch(() => {
+        setAuthState({ authenticated: false });
+        navigate("/");
+      });
   }, [handleSignIn]);
 
   const handleSignOut = () => {
     Auth.signOut().then(() => setAuthState({ authenticated: false }));
+    navigate("/");
   };
 
   if (!authState) return null;
@@ -54,16 +63,24 @@ function App() {
             tablesData: metaDataState,
           }}
         >
-          {authState.authenticated ? (
-            <Home />
-          ) : (
-            <Authenticator
-              onSignIn={handleSignIn}
-              onSignOut={handleSignOut}
-              slot="sign-in"
-              hideSignUp
+          <Routes>
+            <Route
+              exact
+              path="/"
+              element={
+                <Authenticator
+                  onSignIn={handleSignIn}
+                  onSignOut={handleSignOut}
+                  onStateChange={(authState) => console.log(authState)}
+                  slot="sign-in"
+                  hideSignUp
+                >
+                  <Home />
+                </Authenticator>
+              }
             />
-          )}
+            <Route element={<PageNotFound />} />
+          </Routes>
         </AppContextProvider>
       </ErrorBoundary>
     </div>

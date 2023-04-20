@@ -1,6 +1,6 @@
 import { invokeLambdaFunction } from "utils/lambdaFunctions";
 
-async function getTables() {
+async function getTablesMetaData() {
   try {
     // POST request using fetch with error handling
     const query =
@@ -41,4 +41,4 @@ async function getTables() {
   }
 }
 
-export { getTables };
+export { getTablesMetaData };
