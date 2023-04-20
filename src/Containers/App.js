@@ -2,36 +2,41 @@ import Configration from "Configration";
 import Home from "Containers/Home";
 import ErrorBoundary from "Components/ErrorBoundary";
 import { AppContextProvider } from "context/AppContext";
-import { useCallback, useEffect, useState } from 'react';
-import { Auth } from 'aws-amplify';
-import { Authenticator } from '@aws-amplify/ui-react';
+import { useCallback, useEffect, useState, useMemo } from "react";
+import { Auth } from "aws-amplify";
+import { Authenticator } from "@aws-amplify/ui-react";
 
-import '@aws-amplify/ui-react/styles.css';
+import { getTables } from "utils/vaultdb";
+
+import "@aws-amplify/ui-react/styles.css";
 
 // Configure application
 Configration.configure(
-              window.APPLICATION_NAME, 
-              window.REGION, 
-              window.USER_POOL_ID, 
-              window.USER_POOL_APP_CLIENT_ID, 
-              window.USER_IDENTITY_POOL_ID);
+  window.APPLICATION_NAME,
+  window.REGION,
+  window.USER_POOL_ID,
+  window.USER_POOL_APP_CLIENT_ID,
+  window.USER_IDENTITY_POOL_ID
+);
 
 function App() {
-
   const [authState, setAuthState] = useState();
 
-  const handleSignIn = useCallback(cognitoUser => {
+  const [metaDataState, setMetaDataState] = useState({});
+
+  const handleSignIn = useCallback(async (cognitoUser) => {
     const idToken = cognitoUser?.signInUserSession?.idToken;
 
-    if (!idToken) return;    
+    if (!idToken) return;
     console.log(idToken);
     Configration.setUserCredentials(idToken);
-    setAuthState({ authenticated: true });    
+    setAuthState({ authenticated: true });
+    setMetaDataState(await getTables());
   }, []);
 
   useEffect(() => {
     Auth.currentAuthenticatedUser()
-      .then(user => handleSignIn(user))
+      .then((user) => handleSignIn(user))
       .catch(() => setAuthState({ authenticated: false }));
   }, [handleSignIn]);
 
@@ -43,19 +48,24 @@ function App() {
 
   return (
     <div>
-      {authState.authenticated ? (
-        <ErrorBoundary>
-          <AppContextProvider>
+      <ErrorBoundary>
+        <AppContextProvider
+          value={{
+            tablesData: metaDataState,
+          }}
+        >
+          {authState.authenticated ? (
             <Home />
-          </AppContextProvider>
-        </ErrorBoundary>
-      ) : (
-        <Authenticator
-          onSignIn={handleSignIn}
-          onSignOut={handleSignOut}
-          slot="sign-in" hideSignUp
-        />
-      )}
+          ) : (
+            <Authenticator
+              onSignIn={handleSignIn}
+              onSignOut={handleSignOut}
+              slot="sign-in"
+              hideSignUp
+            />
+          )}
+        </AppContextProvider>
+      </ErrorBoundary>
     </div>
   );
 }
