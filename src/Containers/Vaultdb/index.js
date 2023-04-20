@@ -3,19 +3,9 @@ import Box from "@mui/material/Box";
 import EmptyState from "Components/EmptyState";
 import QueryEditor from "Components/QueryEditor";
 import QueryResultTable from "Components/QueryResultTable";
-import useAppContext from "hooks/useAppContext";
 import DnsIcon from "@mui/icons-material/Dns";
 import { DEFAULT_STRINGS } from "utils/constants/common";
 import { invokeLambdaFunction } from "utils/lambdaFunctions";
-
-function BuildRow(row, columns) {
-  const rowitem = {};
-  var res = columns.map(function (v, i) {
-    rowitem[v.name] = row.Row[i].value;
-    return i;
-  });  
-  return rowitem
-}
 
 /**
  * VaultDB for SQL
@@ -23,35 +13,45 @@ function BuildRow(row, columns) {
  * we can have Other Feature Components added to this
  * */
 const Vaultdb = () => {
-  const { tablesData } = useAppContext();
-
   const [queryResults, setQueryResults] = useState();
   /**
    * handles running the query selected by user and returns data for the query
    * and updating store/context if required */
-  const handleOnQueryRun = useCallback((query) => {
-
-    invokeLambdaFunction('vaultdb-execute-query', query).then((result) => {
-        if (result.data) {
-          tablesData["result"] = {
-              metaData: {
-                result,
-                columns: result.data.columns
-              },
-              rows: [],
-          };
-
-          result.data.Rows.forEach((row) => {
-            tablesData['result'].rows.push(BuildRow(row, result.data.columns));
-          });
-
-          setQueryResults(tablesData['result']);
+  const handleOnQueryRun = useCallback(async (query) => {
+    try {
+      const result = await invokeLambdaFunction("vaultdb-execute-query", query);
+      if (result.Payload) {
+        const tableresult = {};
+        tableresult["result"] = {
+          metaData: {
+            result,
+            columns: [],
+          },
+          rows: [],
         };
-      }).catch((error) => {
-        // handle errors
-        console.log(error);
-      });
-  }, [tablesData]);
+        const tabledata = JSON.parse(result.Payload);
+        if (tabledata.data) {
+          const data = JSON.parse(tabledata.data);
+          for (var i = 0; i < data.length; i++) {
+            const rowitem = {};
+            for (let [column_name, column_value] of Object.entries(data[i])) {
+              if (i === 0) {
+                tableresult["result"].metaData.columns.push({
+                  name: column_name,
+                  type: "varchar",
+                });
+              }
+              rowitem[column_name] = column_value;
+            }
+            tableresult["result"].rows.push(rowitem);
+          }
+        }
+        setQueryResults(tableresult["result"]);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
 
   return (
     <Box display="flex" height="100%" width="100%" flexDirection="column">

@@ -143,8 +143,8 @@ const QueryResultTable = ({ tableData = {} }) => {
         count={tableRows.length}
         rowsPerPage={rowsPerPage}
         page={page}
-        onChangePage={handleChangePage}
-        onChangeRowsPerPage={handleChangeRowsPerPage}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
         className={classes.tableFooter}
       />
       <TableRowDialog

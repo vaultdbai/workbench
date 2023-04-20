@@ -31,7 +31,6 @@ function App() {
     const idToken = cognitoUser?.signInUserSession?.idToken;
 
     if (!idToken) return;
-    console.log(idToken);
     Configration.setUserCredentials(idToken);
     setAuthState({ authenticated: true });
     setMetaDataState(await getTablesMetaData());
@@ -46,7 +45,7 @@ function App() {
         setAuthState({ authenticated: false });
         navigate("/");
       });
-  }, [handleSignIn]);
+  }, [handleSignIn, navigate]);
 
   const handleSignOut = () => {
     Auth.signOut().then(() => setAuthState({ authenticated: false }));

@@ -33,7 +33,6 @@ async function getTablesMetaData() {
         }
       }
     }
-    console.log("got tableresult:", tableresult);
     return tableresult;
   } catch (error) {
     console.error(error);
