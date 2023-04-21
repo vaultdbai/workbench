@@ -1,23 +1,23 @@
-import * as React from 'react';
+import * as React from "react";
 import Toolbar from "@mui/material/Toolbar";
-import AppBar from "@mui/material/AppBar";
-
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Logout from '@mui/icons-material/Logout';
+import MuiAppBar from "@mui/material/AppBar";
+import { styled } from "@mui/material/styles";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import Logout from "@mui/icons-material/Logout";
 
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
-import Avatar from '@mui/material/Avatar';
+import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import makeStyles from "@mui/styles/makeStyles";
 import PublishIcon from "@mui/icons-material/Publish";
-import { DEFAULT_STRINGS, noop } from "utils/constants/common";
+import { DEFAULT_STRINGS, noop, DRAWER_WIDTH } from "utils/constants/common";
 import PropTypes from "prop-types";
-import { Authenticator } from '@aws-amplify/ui-react';
-import '@aws-amplify/ui-react/styles.css';
+import { Authenticator } from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
 
 // Navbar styles
 const useStyles = makeStyles((theme) => ({
@@ -42,7 +42,7 @@ function stringToColor(string) {
     hash = string.charCodeAt(i) + ((hash << 5) - hash);
   }
 
-  let color = '#';
+  let color = "#";
 
   for (i = 0; i < 3; i += 1) {
     const value = (hash >> (i * 8)) & 0xff;
@@ -54,16 +54,36 @@ function stringToColor(string) {
 }
 
 function stringAvatar(name) {
-  
   return {
     sx: {
       bgcolor: stringToColor(name),
     },
-    children: `${name.split(' ')[0][0]}`,
+    children: `${name.split(" ")[0][0]}`,
   };
 }
 
-const Navbar = ({ onMenuButtonClick = noop, onImportButtonClick = noop }) => {
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== "open",
+})(({ theme, open }) => ({
+  transition: theme.transitions.create(["margin", "width"], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    width: `calc(100% - ${DRAWER_WIDTH}px)`,
+    marginLeft: `${DRAWER_WIDTH}px`,
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
+
+const Navbar = ({
+  onMenuButtonClick = noop,
+  onImportButtonClick = noop,
+  showDrawer = true,
+}) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -75,7 +95,7 @@ const Navbar = ({ onMenuButtonClick = noop, onImportButtonClick = noop }) => {
   };
 
   return (
-    <AppBar position="absolute" className={classes.appBar}>
+    <AppBar position="absolute" className={classes.appBar} open={showDrawer}>
       <Toolbar>
         <IconButton
           className={classes.menuButton}
@@ -102,60 +122,60 @@ const Navbar = ({ onMenuButtonClick = noop, onImportButtonClick = noop }) => {
         >
           {DEFAULT_STRINGS.IMPORT_DATA}
         </Button>
-          <Authenticator>
-              {({ signOut, user }) => (
-                <React.Fragment>
-                  <IconButton  sx={{ p: 0 }} onClick={handleClick}>
-                    <Avatar {...stringAvatar(user.username)} />
-                  </IconButton>
-                  <Menu
-                  anchorEl={anchorEl}
-                  id="account-menu"
-                  open={open}
-                  onClose={handleClose}
-                  onClick={handleClose}
-                  PaperProps={{
-                    elevation: 0,
-                    sx: {
-                      overflow: 'visible',
-                      filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
-                      mt: 1.5,
-                      '& .MuiAvatar-root': {
-                        width: 32,
-                        height: 32,
-                        ml: -0.5,
-                        mr: 1,
-                      },
-                      '&:before': {
-                        content: '""',
-                        display: 'block',
-                        position: 'absolute',
-                        top: 0,
-                        right: 14,
-                        width: 10,
-                        height: 10,
-                        bgcolor: 'background.paper',
-                        transform: 'translateY(-50%) rotate(45deg)',
-                        zIndex: 0,
-                      },
+        <Authenticator>
+          {({ signOut, user }) => (
+            <React.Fragment>
+              <IconButton sx={{ p: 0 }} onClick={handleClick}>
+                <Avatar {...stringAvatar(user.username)} />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                id="account-menu"
+                open={open}
+                onClose={handleClose}
+                onClick={handleClose}
+                PaperProps={{
+                  elevation: 0,
+                  sx: {
+                    overflow: "visible",
+                    filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
+                    mt: 1.5,
+                    "& .MuiAvatar-root": {
+                      width: 32,
+                      height: 32,
+                      ml: -0.5,
+                      mr: 1,
                     },
-                  }}
-                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                >
-                  <MenuItem onClick={handleClose}>
-                    <Avatar /> Profile
-                  </MenuItem>
-                  <MenuItem onClick={signOut}>
-                    <ListItemIcon>
-                      <Logout fontSize="small" />
-                    </ListItemIcon>
-                    Logout
-                  </MenuItem>
-                </Menu>                
-              </React.Fragment>
-            )}
-          </Authenticator>
+                    "&:before": {
+                      content: '""',
+                      display: "block",
+                      position: "absolute",
+                      top: 0,
+                      right: 14,
+                      width: 10,
+                      height: 10,
+                      bgcolor: "background.paper",
+                      transform: "translateY(-50%) rotate(45deg)",
+                      zIndex: 0,
+                    },
+                  },
+                }}
+                transformOrigin={{ horizontal: "right", vertical: "top" }}
+                anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+              >
+                <MenuItem onClick={handleClose}>
+                  <Avatar /> Profile
+                </MenuItem>
+                <MenuItem onClick={signOut}>
+                  <ListItemIcon>
+                    <Logout fontSize="small" />
+                  </ListItemIcon>
+                  Logout
+                </MenuItem>
+              </Menu>
+            </React.Fragment>
+          )}
+        </Authenticator>
       </Toolbar>
     </AppBar>
   );
@@ -166,4 +186,5 @@ export default Navbar;
 Navbar.propTypes = {
   onMenuButtonClick: PropTypes.func.isRequired,
   onImportButtonClick: PropTypes.func.isRequired,
+  showDrawer: PropTypes.bool.isRequired,
 };

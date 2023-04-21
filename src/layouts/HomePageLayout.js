@@ -2,7 +2,8 @@ import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import makeStyles from "@mui/styles/makeStyles";
-import clsx from "clsx";
+import { styled } from "@mui/material/styles";
+import { DRAWER_WIDTH } from "utils/constants/common";
 
 // css styles for Homepage layout
 const useStyles = makeStyles({
@@ -24,25 +25,40 @@ const useStyles = makeStyles({
   },
 });
 
+const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
+  ({ theme, open }) => ({
+    flexGrow: 1,
+    padding: theme.spacing(3),
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+    marginLeft: `-20px`,
+    ...(open && {
+      transition: theme.transitions.create("margin", {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      width: `calc(100% - ${DRAWER_WIDTH}px)`,
+      marginLeft: `${DRAWER_WIDTH}px`,
+    }),
+  })
+);
+
 // Home Page Layout
 // we can have different page layouts created for different devices , routes, pages etc
-const HomePageLayout = ({ children, navBar, sideBar }) => {
+const HomePageLayout = ({ children, navBar, sideBar, showDrawer }) => {
   const classes = useStyles();
   return (
     <Box height="100vh" width="100vw">
       {/*  navigation Bar goes here */}
       {navBar}
-      <Box component="main" className={clsx(classes.mainContainer)}>
+      {sideBar}
+      <Main open={showDrawer}>
         <Toolbar />
-        <Box className={classes.page}>
-          {/* SideBar goes here */}
-          {sideBar}
-          <Box className={classes.contentArea}>
-            {/* Content goes here */}
-            {children}
-          </Box>
-        </Box>
-      </Box>
+        {/* Content goes here */}
+        {children}
+      </Main>
     </Box>
   );
 };
@@ -52,6 +68,7 @@ HomePageLayout.propTypes = {
   navBar: PropTypes.element.isRequired,
   sideBar: PropTypes.element.isRequired,
   children: PropTypes.arrayOf(PropTypes.element), // page contents
+  showDrawer: PropTypes.bool.isRequired,
 };
 
 export default HomePageLayout;

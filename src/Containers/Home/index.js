@@ -49,9 +49,17 @@ const Home = () => {
         <Navbar
           onMenuButtonClick={toggleDrawerState}
           onImportButtonClick={toggleImportDialogState}
+          showDrawer={showDrawer}
         />
       }
-      sideBar={<SideBar showDrawer={showDrawer} items={sideBarItems} />}
+      sideBar={
+        <SideBar
+          showDrawer={showDrawer}
+          items={sideBarItems}
+          setShowDrawer={setShowDrawer}
+        />
+      }
+      showDrawer={showDrawer}
     >
       {/* Content  for the Home page*/}
       <Vaultdb />
