@@ -1,29 +1,8 @@
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
-import makeStyles from "@mui/styles/makeStyles";
 import { styled } from "@mui/material/styles";
 import { DRAWER_WIDTH } from "utils/constants/common";
-
-// css styles for Homepage layout
-const useStyles = makeStyles({
-  mainContainer: {
-    height: "100%",
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-  },
-  page: {
-    height: "100%",
-    width: "100%",
-    display: "flex",
-    overflow: "hidden",
-  },
-  contentArea: {
-    flex: 1,
-    overflowX: "auto",
-  },
-});
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open }) => ({
@@ -48,7 +27,6 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
 // Home Page Layout
 // we can have different page layouts created for different devices , routes, pages etc
 const HomePageLayout = ({ children, navBar, sideBar, showDrawer }) => {
-  const classes = useStyles();
   return (
     <Box height="100vh" width="100vw">
       {/*  navigation Bar goes here */}
