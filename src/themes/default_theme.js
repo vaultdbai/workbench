@@ -1,5 +1,5 @@
 import red from "@mui/material/colors/red";
-import { createTheme } from '@mui/material/styles';
+import { createTheme } from "@mui/material/styles";
 
 // A custom default theme for this app
 const DefaultTheme = createTheme({
