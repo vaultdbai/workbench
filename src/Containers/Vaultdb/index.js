@@ -20,6 +20,7 @@ const Vaultdb = () => {
   const handleOnQueryRun = useCallback(async (query) => {
     try {
       const result = await invokeLambdaFunction("vaultdb-execute-query", query);
+      console.log(result);
       if (result.Payload) {
         const tableresult = {};
         tableresult["result"] = {
@@ -32,7 +33,8 @@ const Vaultdb = () => {
         const tabledata = JSON.parse(result.Payload);
         if (tabledata.data) {
           const data = JSON.parse(tabledata.data);
-          for (var i = 0; i < data.length; i++) {
+          console.log(data);
+          for (let i in data) {
             const rowitem = {};
             for (let [column_name, column_value] of Object.entries(data[i])) {
               if (i === 0) {

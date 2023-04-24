@@ -1,6 +1,6 @@
 # VaultDB Workbench
 
-### [Live Version](http://vaultdb-hosted-content.s3-website.us-east-2.amazonaws.com/workbench/index.html)
+### [Live Version](http://vaultdb-hosted-content.s3-website.us-east-2.amazonaws.com/workbench/)
 
 A Web App to query VaultDB
 
