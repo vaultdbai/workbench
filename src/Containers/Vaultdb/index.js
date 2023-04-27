@@ -19,7 +19,7 @@ const Vaultdb = () => {
    * and updating store/context if required */
   const handleOnQueryRun = useCallback(async (query) => {
     try {
-      const result = await invokeLambdaFunction("vaultdb-execute-query", query);
+      const result = await invokeLambdaFunction("execute-query", query);
       console.log(result);
       if (result.Payload) {
         const tableresult = {};

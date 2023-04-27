@@ -6,7 +6,7 @@ async function getTablesMetaData() {
     const query =
       "select t.table_name, c.column_name from information_schema.tables t, information_schema.columns c where t.table_name=c.table_name";
 
-    const result = await invokeLambdaFunction("vaultdb-execute-query", query);
+    const result = await invokeLambdaFunction("execute-query", query);
     console.log(result);
     const tableresult = {};
     if (result.Payload) {

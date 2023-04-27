@@ -11,7 +11,7 @@ const invokeLambdaFunction = (functionName, query) => {
 
   const lambda = new AWS.Lambda();
   const params = {
-    FunctionName: functionName + "-" + Configration.getName(),
+    FunctionName: Configration.getName() + "-" + functionName,
     Payload: JSON.stringify(payload),
   };
   return lambda.invoke(params).promise();
