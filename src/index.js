@@ -6,6 +6,20 @@ import ThemeProvider from "@mui/styles/ThemeProvider";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "themes/default_theme";
 import { BrowserRouter as Router } from "react-router-dom";
+import { Authenticator } from "@aws-amplify/ui-react";
+import { Amplify } from "aws-amplify";
+import AWS from "aws-sdk";
+
+// Configure Amplify in index file or root file
+Amplify.configure({
+  Auth: {
+    region: window.REGION,
+    userPoolId: window.USER_POOL_ID,
+    userPoolWebClientId: window.USER_POOL_APP_CLIENT_ID,
+  },
+});
+
+AWS.config.region = window.REGION; // Region
 
 const container = document.getElementById("root");
 
@@ -16,8 +30,10 @@ root.render(
     <ThemeProvider theme={theme}>
       {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
       <CssBaseline />
-      <Router>
-        <App />
+      <Router basename="/workbench">
+        <Authenticator.Provider>
+          <App />
+        </Authenticator.Provider>
       </Router>
     </ThemeProvider>
   </React.StrictMode>

@@ -1,6 +1,6 @@
 {
   "name": "workbench",
-  "homepage": "https://vaultdb.ai",
+  "homepage": "https://vaultdb.ai/workbench",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

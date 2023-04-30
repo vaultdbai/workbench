@@ -2,9 +2,13 @@ import ImportFormDialog from "Components/ImportFormDialog";
 import Navbar from "Components/Navbar";
 import SideBar from "Components/SideBar";
 import Vaultdb from "Containers/Vaultdb";
-import useAppContext from "hooks/useAppContext";
 import HomePageLayout from "layouts/HomePageLayout";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
+import { useAuthenticator } from "@aws-amplify/ui-react";
+import Configration from "Configration";
+import ErrorBoundary from "Components/ErrorBoundary";
+import { AppContextProvider } from "context/AppContext";
+import { getTablesMetaData } from "utils/vaultdb";
 
 /**
  * Home Component
@@ -15,6 +19,28 @@ import { useCallback, useMemo, useState } from "react";
 const Home = () => {
   // Sidebar State to toggle drawer
   const [showDrawer, setShowDrawer] = useState(true);
+  const [tablesData, setTablesData] = useState({});
+  const { user } = useAuthenticator((context) => [context.user]);
+
+  useEffect(() => {
+    async function getMetadata() {
+      setTablesData(await getTablesMetaData());
+    }
+    // Configure application
+    Configration.configure(
+      window.APPLICATION_NAME,
+      window.REGION,
+      window.USER_POOL_ID,
+      window.USER_POOL_APP_CLIENT_ID,
+      window.USER_IDENTITY_POOL_ID
+    );
+    console.log(user);
+    const idToken = user?.signInUserSession?.idToken;
+    if (!idToken) console.log("User Does not exists");
+    Configration.setUserCredentials(idToken);
+    getMetadata();
+  }, [user]);
+
   const toggleDrawerState = useCallback(() => {
     setShowDrawer((show) => !show);
   }, [setShowDrawer]);
@@ -30,9 +56,6 @@ const Home = () => {
     setShowImportDialog((val) => !val);
   };
 
-  // hook to fetch data from context
-  const { tablesData } = useAppContext();
-
   // creates list of sidebars items to be shown
   // returns Array of tables metadata info
   const sideBarItems = useMemo(
@@ -44,31 +67,35 @@ const Home = () => {
   );
 
   return (
-    <HomePageLayout
-      navBar={
-        <Navbar
-          onMenuButtonClick={toggleDrawerState}
-          onImportButtonClick={toggleImportDialogState}
+    <ErrorBoundary>
+      <AppContextProvider value={{ tablesData: tablesData }}>
+        <HomePageLayout
+          navBar={
+            <Navbar
+              onMenuButtonClick={toggleDrawerState}
+              onImportButtonClick={toggleImportDialogState}
+              showDrawer={showDrawer}
+            />
+          }
+          sideBar={
+            <SideBar
+              showDrawer={showDrawer}
+              items={sideBarItems}
+              setShowDrawer={setShowDrawer}
+            />
+          }
           showDrawer={showDrawer}
-        />
-      }
-      sideBar={
-        <SideBar
-          showDrawer={showDrawer}
-          items={sideBarItems}
-          setShowDrawer={setShowDrawer}
-        />
-      }
-      showDrawer={showDrawer}
-    >
-      {/* Content  for the Home page*/}
-      <Vaultdb />
-      <ImportFormDialog
-        showDialog={showImportDialog}
-        handleCancelAction={toggleImportDialogState}
-        handleSuccessAction={handleImportDialogSuccess}
-      />
-    </HomePageLayout>
+        >
+          {/* Content  for the Home page*/}
+          <Vaultdb />
+          <ImportFormDialog
+            showDialog={showImportDialog}
+            handleCancelAction={toggleImportDialogState}
+            handleSuccessAction={handleImportDialogSuccess}
+          />
+        </HomePageLayout>
+      </AppContextProvider>
+    </ErrorBoundary>
   );
 };
 
