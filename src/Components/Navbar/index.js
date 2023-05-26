@@ -1,4 +1,5 @@
 import * as React from "react";
+import {Link} from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import MuiAppBar from "@mui/material/AppBar";
 import { styled } from "@mui/material/styles";
@@ -163,9 +164,11 @@ const Navbar = ({
                 transformOrigin={{ horizontal: "right", vertical: "top" }}
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
               >
-                <MenuItem onClick={handleClose}>
-                  <Avatar /> Profile
-                </MenuItem>
+                <Link to="/profile">
+                  <MenuItem>
+                    <Avatar/> Profile
+                  </MenuItem>
+                </Link>
                 <MenuItem onClick={signOut}>
                   <ListItemIcon>
                     <Logout fontSize="small" />

@@ -5,10 +5,11 @@ import reportWebVitals from "./reportWebVitals";
 import ThemeProvider from "@mui/styles/ThemeProvider";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "themes/default_theme";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Authenticator } from "@aws-amplify/ui-react";
 import { Amplify } from "aws-amplify";
 import AWS from "aws-sdk";
+import ProfilePage from "Components/ProfilePage";
 
 // Configure Amplify in index file or root file
 Amplify.configure({
@@ -31,9 +32,14 @@ root.render(
       {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
       <CssBaseline />
       <Router basename="/workbench">
-        <Authenticator.Provider>
-          <App />
-        </Authenticator.Provider>
+        <Routes>
+          <Route path="/" element={
+            <Authenticator.Provider>
+              <App />
+            </Authenticator.Provider>
+          }/>
+          <Route path="profile" element={<ProfilePage/>}/>
+        </Routes>
       </Router>
     </ThemeProvider>
   </React.StrictMode>
