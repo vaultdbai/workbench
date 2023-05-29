@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function stringToColor(string) {
+export function stringToColor(string) {
   let hash = 0;
   let i;
 
@@ -54,7 +54,7 @@ function stringToColor(string) {
   return color;
 }
 
-function stringAvatar(name) {
+export function stringAvatar(name) {
   return {
     sx: {
       bgcolor: stringToColor(name),
