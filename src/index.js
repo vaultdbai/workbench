@@ -37,8 +37,8 @@ root.render(
             <Authenticator.Provider>
               <App />
             </Authenticator.Provider>
-          }/>
-          <Route path="profile" element={<ProfilePage/>}/>
+          } />
+            <Route path="profile" element={<ProfilePage />} />
         </Routes>
       </Router>
     </ThemeProvider>
