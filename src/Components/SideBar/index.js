@@ -15,7 +15,7 @@ import { getSyntaxMockData } from "utils/mockData";
 const useStyles = makeStyles((theme) => ({
   drawerPaper: {
     [theme.breakpoints.up("sm")]: {
-      position: "relative",
+      position: "absolute",
     },
     whiteSpace: "nowrap",
     height: "100%",
@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // SideBar Component
-const SideBar = ({ showDrawer = true, items = [] }) => {
+const SideBar = ({ showDrawer = false, items = [] }) => {
   const classes = useStyles();
 
   return (
