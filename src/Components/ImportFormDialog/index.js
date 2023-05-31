@@ -17,11 +17,10 @@ const useStyles = makeStyles({
   },
 });
 
-const ImportFormDialog = ({
-  showDialog = false,
-  handleCancelAction = noop,
-  handleSuccessAction = noop,
-}) => {
+const ImportFormDialog = (props) => {
+
+  const { showDialog, handleCancelAction, handleSuccessAction } = props;
+
   const classes = useStyles();
   return (
     <Dialog
@@ -63,7 +62,7 @@ const ImportFormDialog = ({
 
       {/* Dialog Action Buttons */}
       <DialogActions>
-        <Button onClick={handleCancelAction} color="default">
+        <Button onClick={handleCancelAction}>
           {DEFAULT_STRINGS.BUTTON_CANCEL_TEXT}
         </Button>
         <Button

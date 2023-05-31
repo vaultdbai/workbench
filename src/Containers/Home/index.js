@@ -48,12 +48,17 @@ const Home = () => {
   // State to toggle Import Data Dialog
   const [showImportDialog, setShowImportDialog] = useState(false);
 
-  const toggleImportDialogState = () => {
-    setShowImportDialog((val) => !val);
+  const closeImportDialog = () => {
+    setShowImportDialog(false);
   };
 
+  const openImportDialog = () => {
+    setShowImportDialog(true);
+  }
+
   const handleImportDialogSuccess = () => {
-    setShowImportDialog((val) => !val);
+    console.log("Success on Import dialog")
+    setShowImportDialog(false);
   };
 
   // creates list of sidebars items to be shown
@@ -73,7 +78,7 @@ const Home = () => {
           navBar={
             <Navbar
               onMenuButtonClick={toggleDrawerState}
-              onImportButtonClick={toggleImportDialogState}
+              onImportButtonClick={openImportDialog}
               showDrawer={showDrawer}
             />
           }
@@ -90,7 +95,7 @@ const Home = () => {
           <Vaultdb />
           <ImportFormDialog
             showDialog={showImportDialog}
-            handleCancelAction={toggleImportDialogState}
+            handleCancelAction={closeImportDialog}
             handleSuccessAction={handleImportDialogSuccess}
           />
         </HomePageLayout>
