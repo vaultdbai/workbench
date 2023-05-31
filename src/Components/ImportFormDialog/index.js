@@ -22,26 +22,40 @@ const ImportFormDialog = (props) => {
 
   const { showDialog, handleCancelAction, handleSuccessAction } = props;
 
-  const [fileName, setFileName] = useState("");
+  const [file, setFile] = useState("");
 
   // make sure to remove the file name if we close the window.
   const closeDialog = useCallback(() => {
-    setFileName("")
+    setFile(null)
     handleCancelAction()
-  }, [setFileName])
+  }, [setFile])
 
   const successfullyCloseDialog = useCallback(() => {
-    setFileName("")
+    setFile(null)
     handleSuccessAction()
-  }, [setFileName])
+  }, [setFile])
 
   /**
    * Function called when user opens a file in the import dialog
    * @param {the event that triggers when a user opens a file in the import dialog} event 
    */
   const handleFileOpen = (event) => {
+    // set the file name on the ImportForm Dialog
     const file = event.target.files[0];
-    setFileName(file.name);
+    setFile(file);
+
+    // simply read the file's content
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const fileContent = e.target.result;
+        // Do something with the file content
+        console.log(fileContent)
+      };
+
+      reader.readAsText(file);
+    }
   }
 
   const classes = useStyles();
@@ -68,7 +82,7 @@ const ImportFormDialog = (props) => {
           justifyContent="space-between"
           alignItems="center"
         >
-          {fileName === "" ? <Typography> Select File </Typography> : <Typography>{fileName}</Typography>}
+          {file === null ? <Typography> Select File </Typography> : <Typography>{file.name}</Typography>}
           <label htmlFor="file-upload">
             <input
               accept=".csv, .sql, .json, .xml"
