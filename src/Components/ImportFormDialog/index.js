@@ -11,6 +11,7 @@ import Typography from "@mui/material/Typography";
 import PropTypes from "prop-types";
 import { DEFAULT_STRINGS } from "utils/constants/common";
 import { useState } from "react";
+import { invokeLambdaFunction } from "utils/lambdaFunctions";
 
 const useStyles = makeStyles({
   input: {
@@ -31,8 +32,26 @@ const ImportFormDialog = (props) => {
   }
 
   const successfullyCloseDialog = () => {
-    setFile(null)
-    handleSuccessAction()
+    // simply read the file's content
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = async (e) => {
+        const fileContent = e.target.result;
+
+        if (file.name.endsWith(".sql")) {
+          const result = await invokeLambdaFunction("execute-query", fileContent);
+
+          console.log(result)
+
+        }
+      };
+
+      reader.readAsText(file);
+
+      setFile(null)
+      handleSuccessAction()
+    }
   }
 
   /**
@@ -44,18 +63,6 @@ const ImportFormDialog = (props) => {
     const file = event.target.files[0];
     setFile(file);
 
-    // simply read the file's content
-    if (file) {
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        const fileContent = e.target.result;
-        // Do something with the file content
-        console.log(fileContent)
-      };
-
-      reader.readAsText(file);
-    }
   }
 
   const classes = useStyles();
@@ -82,7 +89,7 @@ const ImportFormDialog = (props) => {
           justifyContent="space-between"
           alignItems="center"
         >
-          {file === null ? <Typography> Select File </Typography> : <Typography>{file.name}</Typography>}
+          {(file === null || file === undefined) ? <Typography> Select File </Typography> : <Typography>{file.name}</Typography>}
           <label htmlFor="file-upload">
             <input
               accept=".csv, .sql, .json, .xml"
@@ -104,22 +111,22 @@ const ImportFormDialog = (props) => {
           {DEFAULT_STRINGS.BUTTON_CANCEL_TEXT}
         </Button>
         {/* Disable the button if there was nothing uploaded */}
-        {file === null ? 
-        <Button
-          variant="contained"
-          onClick={successfullyCloseDialog}
-          color="secondary"
-          disabled
-        >
-          {DEFAULT_STRINGS.BUTTON_UPLOAD_TEXT}
-        </Button> :
-        <Button
-          variant="contained"
-          onClick={successfullyCloseDialog}
-          color="secondary"
-        >
-          {DEFAULT_STRINGS.BUTTON_UPLOAD_TEXT}
-        </Button>}
+        {(file === null || file == undefined) ?
+          <Button
+            variant="contained"
+            onClick={successfullyCloseDialog}
+            color="secondary"
+            disabled
+          >
+            {DEFAULT_STRINGS.BUTTON_UPLOAD_TEXT}
+          </Button> :
+          <Button
+            variant="contained"
+            onClick={successfullyCloseDialog}
+            color="secondary"
+          >
+            {DEFAULT_STRINGS.BUTTON_UPLOAD_TEXT}
+          </Button>}
       </DialogActions>
     </Dialog>
   );
