@@ -120,7 +120,7 @@ const ImportFormDialog = (props) => {
           {DEFAULT_STRINGS.BUTTON_CANCEL_TEXT}
         </Button>
         {/* Disable the button if there was nothing uploaded */}
-        {(file === null || file == undefined) ?
+        {(file === null || file === undefined) ?
           <Button
             variant="contained"
             onClick={successfullyCloseDialog}
