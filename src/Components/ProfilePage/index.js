@@ -4,7 +4,7 @@ import { makeStyles } from '@mui/styles';
 import Avatar from "@mui/material/Avatar";
 import { stringAvatar, stringToColor } from "Components/Navbar";
 import { AccountSettings, Authenticator } from "@aws-amplify/ui-react";
-import { Badge, Button, Container, Typography } from "@mui/material";
+import { Badge, Button, CardContent, Container, Typography, Card, Divider } from "@mui/material";
 import { Create, FirstPage } from "@mui/icons-material";
 import ImageIcon from '@mui/icons-material/Image';
 import { Storage } from 'aws-amplify';
@@ -87,43 +87,54 @@ const ProfilePage = (props) => {
         {/* The avatar and the name of the user along with a button to upload an avatar image */}
         <Authenticator>
           {({ signOut, user }) => (
-            <>
-              <Badge
-                overlap="circular"
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                badgeContent={
-                  <Create fontSize="large" />
-                }>
-                <Avatar src={avatarImage} alt="Avatar" {...stringAvatar(user.username)} sx={{
-                  width: 150, height: 150, fontSize: 100, bgcolor: stringToColor(user.username), "&:hover": {
-                    bgcolor: "gray"
-                  }
-                }} />
-              </Badge>
-              <Typography variant="h4" sx={{ paddingTop: "10px" }}>{user.username}</Typography>
-              <Typography variant="h6" component="h2" gutterBottom>
-                Upload Avatar
-              </Typography>
-              <input
-                accept="image/*"
-                className={classes.input}
-                id="upload-avatar"
-                type="file"
-                onChange={handleImageUpload}
-              />
-              <label htmlFor="upload-avatar">
-                <Button variant="contained" component="span" startIcon={<ImageIcon />}>
-                  Choose Image
-                </Button>
-              </label>
-            </>
+            <Card>
+              <CardContent>
+                <Container sx={{ padding: "50px" }}>
+                  <Badge
+                    overlap="circular"
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                    badgeContent={
+                      <Create fontSize="large" />
+                    }>
+                    <Avatar src={avatarImage} alt="Avatar" {...stringAvatar(user.username)} sx={{
+                      width: 150, height: 150, fontSize: 100, bgcolor: stringToColor(user.username), "&:hover": {
+                        bgcolor: "gray"
+                      }
+                    }} />
+                  </Badge>
+                  <Typography variant="h4" sx={{ paddingTop: "10px", paddingBottom: "10px" }}>{user.username}</Typography>
+                  <Divider />
+                  <Typography variant="h6" component="h2" sx={{ paddingTop: "10px" }} gutterBottom>
+                    Upload Avatar
+                  </Typography>
+                  <input
+                    accept="image/*"
+                    className={classes.input}
+                    id="upload-avatar"
+                    type="file"
+                    onChange={handleImageUpload}
+                  />
+                  <label htmlFor="upload-avatar">
+                    <Button variant="contained" component="span" startIcon={<ImageIcon />}>
+                      Choose Image
+                    </Button>
+                  </label>
+                </Container>
+              </CardContent>
+            </Card>
           )}
         </Authenticator>
 
+        <Container sx={{paddingTop: "20px"}}/>
+
         {/* A place to change the user's password */}
-        <Typography variant="h3" mt={4} mb={2}>Change Password</Typography>
-        <AccountSettings.ChangePassword onSuccess={handleChangePasswordSuccess} />
-        
+        <Card>
+          <CardContent>
+            <Typography variant="h3" mb={2}>Change Password</Typography>
+            <AccountSettings.ChangePassword onSuccess={handleChangePasswordSuccess} />
+          </CardContent>
+        </Card>
+
       </Container>
     </>
   )

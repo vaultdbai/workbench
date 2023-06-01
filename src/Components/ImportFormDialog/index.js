@@ -45,6 +45,15 @@ const ImportFormDialog = (props) => {
           console.log(result)
 
         }
+        else if (file.name.endsWith(".json")) {
+          console.log("You uploaded a JSON file");
+        } else if (file.name.endsWith(".csv")) {
+          console.log("You uploaded a CSV file.");
+        } else if (file.name.endsWith(".xml")) {
+          console.log("You uploaded an XML document");
+        } else {
+          console.log("You uploaded a file that we don't comply with...")
+        }
       };
 
       reader.readAsText(file);
