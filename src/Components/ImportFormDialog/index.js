@@ -9,8 +9,8 @@ import Box from "@mui/material/Box";
 import makeStyles from "@mui/styles/makeStyles";
 import Typography from "@mui/material/Typography";
 import PropTypes from "prop-types";
-import { DEFAULT_STRINGS, noop } from "utils/constants/common";
-import { useCallback, useState } from "react";
+import { DEFAULT_STRINGS } from "utils/constants/common";
+import { useState } from "react";
 
 const useStyles = makeStyles({
   input: {
@@ -22,18 +22,18 @@ const ImportFormDialog = (props) => {
 
   const { showDialog, handleCancelAction, handleSuccessAction } = props;
 
-  const [file, setFile] = useState("");
+  const [file, setFile] = useState(null);
 
   // make sure to remove the file name if we close the window.
-  const closeDialog = useCallback(() => {
+  const closeDialog = () => {
     setFile(null)
     handleCancelAction()
-  }, [setFile])
+  }
 
-  const successfullyCloseDialog = useCallback(() => {
+  const successfullyCloseDialog = () => {
     setFile(null)
     handleSuccessAction()
-  }, [setFile])
+  }
 
   /**
    * Function called when user opens a file in the import dialog
@@ -103,13 +103,23 @@ const ImportFormDialog = (props) => {
         <Button onClick={closeDialog}>
           {DEFAULT_STRINGS.BUTTON_CANCEL_TEXT}
         </Button>
+        {/* Disable the button if there was nothing uploaded */}
+        {file === null ? 
+        <Button
+          variant="contained"
+          onClick={successfullyCloseDialog}
+          color="secondary"
+          disabled
+        >
+          {DEFAULT_STRINGS.BUTTON_UPLOAD_TEXT}
+        </Button> :
         <Button
           variant="contained"
           onClick={successfullyCloseDialog}
           color="secondary"
         >
           {DEFAULT_STRINGS.BUTTON_UPLOAD_TEXT}
-        </Button>
+        </Button>}
       </DialogActions>
     </Dialog>
   );
