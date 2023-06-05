@@ -21,11 +21,13 @@ A Web App to query VaultDB
 Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy Unrestricted
 $env:NODE_OPTIONS = "--openssl-legacy-provider"
 
-2. Run `yarn install` to install the project dependencies.
+2. Follow Manual Setup Instructions on [this site](https://docs.amplify.aws/lib/storage/getting-started/q/platform/js/#manual-setup-import-storage-bucket) to manually set up connections to your S3 bucket.
 
-3. Run `yarn start` to run the app in development mode.
+3. Run `yarn install` to install the project dependencies.
 
-4. App can be seen at: `http://localhost:3000/`
+4. Run `yarn start` to run the app in development mode.
+
+5. App can be seen at: `http://localhost:3000/`
 
 ## Page Load Time
 

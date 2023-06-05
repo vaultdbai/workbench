@@ -47,7 +47,7 @@ const ProfilePage = (props) => {
   const fetchAvatarImage = async () => {
     try {
       const user = await Auth.currentAuthenticatedUser();
-      const avatarImageUrl = await Storage.get(user.username + '/avatar.jpg');
+      const avatarImageUrl = await Storage.get("avatars/"+ user.username + '/avatar.jpg');
       setAvatarImage(avatarImageUrl);
     } catch (error) {
       console.log('Error fetching avatar image:', error);
@@ -64,7 +64,7 @@ const ProfilePage = (props) => {
     const user = await Auth.currentAuthenticatedUser();
 
     try {
-      await Storage.put(user.username + '/avatar.jpg', file, {
+      await Storage.put("avatars/"+ user.username + '/avatar.jpg', file, {
         contentType: 'image/jpeg',
       });
       fetchAvatarImage();

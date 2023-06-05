@@ -47,6 +47,32 @@ const ImportFormDialog = (props) => {
         }
         else if (file.name.endsWith(".json")) {
           console.log("You uploaded a JSON file");
+
+          // first convert the text into a JavaScript Object
+          const data = JSON.parse(fileContent);
+
+          // next create the two SQL statements, one to create the table, the other to insert the data.
+          // We will go through all the data once
+          let headers = [];
+          let headerDataType = [];
+
+          let insertValuesSQL = 'INSERT INTO ';
+          let headerInputMode = true; // whether or not we are iterating the first row which is the header row.
+          for (let row in data) {
+            for (let col in data[row]) {
+              if (headerInputMode) {
+                headers.push(data[row][col])
+              }
+              else {
+                
+              }
+            }
+            headerInputMode = false
+          }
+
+          console.log(headers);
+
+          const createTableSQL = "CREATE TABLE ";
         } else if (file.name.endsWith(".csv")) {
           console.log("You uploaded a CSV file.");
         } else if (file.name.endsWith(".xml")) {
