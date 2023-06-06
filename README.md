@@ -23,11 +23,13 @@ $env:NODE_OPTIONS = "--openssl-legacy-provider"
 
 2. Follow Manual Setup Instructions on [this site](https://docs.amplify.aws/lib/storage/getting-started/q/platform/js/#manual-setup-import-storage-bucket) to manually set up connections to your S3 bucket.
 
-3. Run `yarn install` to install the project dependencies.
+3. Change the existing bucket name to your bucket in the object in the Amplify.configure() function in index.js under the src folder.
 
-4. Run `yarn start` to run the app in development mode.
+4. Run `yarn install` to install the project dependencies.
 
-5. App can be seen at: `http://localhost:3000/`
+5. Run `yarn start` to run the app in development mode.
+
+6. App can be seen at: `http://localhost:3000/`
 
 ## Page Load Time
 
