@@ -18,6 +18,8 @@ import PublishIcon from "@mui/icons-material/Publish";
 import { DEFAULT_STRINGS, noop, DRAWER_WIDTH } from "utils/constants/common";
 import PropTypes from "prop-types";
 import { Authenticator } from "@aws-amplify/ui-react";
+import { Auth } from 'aws-amplify';
+import { Storage } from 'aws-amplify';
 import "@aws-amplify/ui-react/styles.css";
 
 // Navbar styles
@@ -95,6 +97,28 @@ const Navbar = ({
     setAnchorEl(null);
   };
 
+  const [avatarImage, setAvatarImage] = React.useState(null);
+
+  React.useEffect(() => {
+    fetchAvatarImage();
+  }, []);
+
+  /** 
+   * Calling the AWS Database to get the avatar image of the 
+   * user and putting it on the profile page. Called when we
+   * reload/load the page and when an avatar image is 
+   * uploaded  
+   * */
+  const fetchAvatarImage = async () => {
+    try {
+      const user = await Auth.currentAuthenticatedUser();
+      const avatarImageUrl = await Storage.get("avatars/"+ user.username + '/avatar.jpg');
+      setAvatarImage(avatarImageUrl);
+    } catch (error) {
+      console.log('Error fetching avatar image:', error);
+    }
+  };
+
   return (
     <AppBar position="absolute" className={classes.appBar} open={showDrawer}>
       <Toolbar>
@@ -126,8 +150,8 @@ const Navbar = ({
         <Authenticator>
           {({ signOut, user }) => (
             <React.Fragment>
-              <IconButton sx={{ p: 0 }} onClick={handleClick}>
-                <Avatar {...stringAvatar(user.username)} />
+              <IconButton sx={{ paddingLeft: 2 }} onClick={handleClick}>
+                <Avatar src={avatarImage} alt="Avatar" {...stringAvatar(user.username)} />
               </IconButton>
               <Menu
                 anchorEl={anchorEl}
