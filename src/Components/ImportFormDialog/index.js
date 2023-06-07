@@ -12,6 +12,7 @@ import PropTypes from "prop-types";
 import { DEFAULT_STRINGS } from "utils/constants/common";
 import { useState } from "react";
 import { invokeLambdaFunction } from "utils/lambdaFunctions";
+import { TextField } from "@mui/material";
 
 const useStyles = makeStyles({
   input: {
@@ -23,11 +24,16 @@ const ImportFormDialog = (props) => {
 
   const { showDialog, handleCancelAction, handleSuccessAction } = props;
 
+  // the uploaded file. Contains file content and file metadata including filename
   const [file, setFile] = useState(null);
 
-  // make sure to remove the file name if we close the window.
+  // 
+  const [tableName, setTableName] = useState('');
+
+  // make sure to remove the uploaded file and clear the table name input when we close the dialog.
   const closeDialog = () => {
     setFile(null)
+    setTableName('')
     handleCancelAction()
   }
 
@@ -56,7 +62,7 @@ const ImportFormDialog = (props) => {
           let headers = [];
           let headerDataType = [];
 
-          let insertValuesSQL = 'INSERT INTO ktest VALUES ';
+          let insertValuesSQL = 'INSERT INTO ' + tableName + ' VALUES ';
           let headerInputMode = true; // whether or not we are iterating the first row which is the header row.
           for (let row in data) {
             let i = 0;
@@ -100,7 +106,7 @@ const ImportFormDialog = (props) => {
               insertValuesSQL = insertValuesSQL.substring(0, insertValuesSQL.length - 1)
               insertValuesSQL += "),"
             }
-            
+
 
             // now we are onto the data rows so we are not detecting any more headers.
             headerInputMode = false
@@ -111,7 +117,7 @@ const ImportFormDialog = (props) => {
           insertValuesSQL += ";";
 
           // now create the CREATE TABLE sql statement
-          let createTableSQL = "CREATE TABLE ktest(";
+          let createTableSQL = "CREATE TABLE " + tableName + "(";
           for (let i = 0; i < headers.length; i++) {
             createTableSQL += headers[i] + " " + headerDataType[i] + ",";
           }
@@ -135,7 +141,8 @@ const ImportFormDialog = (props) => {
 
       reader.readAsText(file);
 
-      setFile(null)
+      setFile(null);
+      setTableName('');
       handleSuccessAction()
     }
   }
@@ -150,6 +157,17 @@ const ImportFormDialog = (props) => {
     setFile(file);
 
   }
+
+  /**
+   * Function called when the user types in the Table name TextField
+   * @param {the event that triggers when a user types in the Table name TextField} event 
+   */
+  const handleInputChange = (event) => {
+    setTableName(event.target.value);
+  }
+
+  const notShowTableNameInput = file === null || file === undefined || file.name.endsWith(".sql");
+  const tableNameError = tableName.includes(" ");
 
   const classes = useStyles();
   return (
@@ -188,7 +206,15 @@ const ImportFormDialog = (props) => {
               {DEFAULT_STRINGS.BUTTON_OPEN_TEXT}
             </Button>
           </label>
+
         </Box>
+        {(notShowTableNameInput) ? <Box /> :
+          <TextField
+            label="Table name"
+            value={tableName}
+            onChange={handleInputChange}
+            error={tableNameError}
+            helperText={tableNameError ? "Table name cannot have any spaces" : ""} />}
       </DialogContent>
 
       {/* Dialog Action Buttons */}
@@ -196,23 +222,15 @@ const ImportFormDialog = (props) => {
         <Button onClick={closeDialog}>
           {DEFAULT_STRINGS.BUTTON_CANCEL_TEXT}
         </Button>
-        {/* Disable the button if there was nothing uploaded */}
-        {(file === null || file === undefined) ?
-          <Button
-            variant="contained"
-            onClick={successfullyCloseDialog}
-            color="secondary"
-            disabled
-          >
-            {DEFAULT_STRINGS.BUTTON_UPLOAD_TEXT}
-          </Button> :
-          <Button
-            variant="contained"
-            onClick={successfullyCloseDialog}
-            color="secondary"
-          >
-            {DEFAULT_STRINGS.BUTTON_UPLOAD_TEXT}
-          </Button>}
+        {/* Disable the button if there was nothing uploaded or if the file uploaded is not .sql or there is no inputted table name */}
+        <Button
+          variant="contained"
+          onClick={successfullyCloseDialog}
+          color="secondary"
+          disabled={file === null || file === undefined || (!notShowTableNameInput && tableName.length <= 0) || tableNameError}
+        >
+          {DEFAULT_STRINGS.BUTTON_UPLOAD_TEXT}
+        </Button>
       </DialogActions>
     </Dialog>
   );
