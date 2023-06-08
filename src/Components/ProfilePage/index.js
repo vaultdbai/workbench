@@ -4,8 +4,8 @@ import { makeStyles } from '@mui/styles';
 import Avatar from "@mui/material/Avatar";
 import { stringAvatar, stringToColor } from "Components/Navbar";
 import { AccountSettings, Authenticator } from "@aws-amplify/ui-react";
-import { Badge, Button, CardContent, Container, Typography, Card, Divider } from "@mui/material";
-import { Create, FirstPage } from "@mui/icons-material";
+import { Button, CardContent, Container, Typography, Card, Divider } from "@mui/material";
+import { FirstPage } from "@mui/icons-material";
 import ImageIcon from '@mui/icons-material/Image';
 import { Storage } from 'aws-amplify';
 import { Auth } from 'aws-amplify';
@@ -47,7 +47,7 @@ const ProfilePage = (props) => {
   const fetchAvatarImage = async () => {
     try {
       const user = await Auth.currentAuthenticatedUser();
-      const avatarImageUrl = await Storage.get("avatars/"+ user.username + '/avatar.jpg');
+      const avatarImageUrl = await Storage.get("avatars/" + user.username + '/avatar.jpg');
       setAvatarImage(avatarImageUrl);
     } catch (error) {
       console.log('Error fetching avatar image:', error);
@@ -64,7 +64,7 @@ const ProfilePage = (props) => {
     const user = await Auth.currentAuthenticatedUser();
 
     try {
-      await Storage.put("avatars/"+ user.username + '/avatar.jpg', file, {
+      await Storage.put("avatars/" + user.username + '/avatar.jpg', file, {
         contentType: 'image/jpeg',
       });
       fetchAvatarImage();
@@ -90,18 +90,12 @@ const ProfilePage = (props) => {
             <Card>
               <CardContent>
                 <Container sx={{ padding: "50px" }}>
-                  <Badge
-                    overlap="circular"
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                    badgeContent={
-                      <Create fontSize="large" />
-                    }>
-                    <Avatar src={avatarImage} alt="Avatar" {...stringAvatar(user.username)} sx={{
-                      width: 150, height: 150, fontSize: 100, bgcolor: stringToColor(user.username), "&:hover": {
-                        bgcolor: "gray"
-                      }
-                    }} />
-                  </Badge>
+                  <Avatar src={avatarImage} alt="Avatar" {...stringAvatar(user.username)} sx={{
+                    width: 150, height: 150, fontSize: 100, bgcolor: stringToColor(user.username), "&:hover": {
+                      bgcolor: "gray"
+                    }
+                  }} />
+
                   <Typography variant="h4" sx={{ paddingTop: "10px", paddingBottom: "10px" }}>{user.username}</Typography>
                   <Divider />
                   <Typography variant="h6" component="h2" sx={{ paddingTop: "10px" }} gutterBottom>
@@ -125,7 +119,7 @@ const ProfilePage = (props) => {
           )}
         </Authenticator>
 
-        <Container sx={{paddingTop: "20px"}}/>
+        <Container sx={{ paddingTop: "20px" }} />
 
         {/* A place to change the user's password */}
         <Card>
