@@ -150,7 +150,7 @@ const Navbar = ({
         <Authenticator>
           {({ signOut, user }) => (
             <React.Fragment>
-              <IconButton sx={{ paddingLeft: 2 }} onClick={handleClick}>
+              <IconButton onClick={handleClick}>
                 <Avatar src={avatarImage} alt="Avatar" {...stringAvatar(user.username)} />
               </IconButton>
               <Menu
