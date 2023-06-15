@@ -112,7 +112,7 @@ const Navbar = ({
   const fetchAvatarImage = async () => {
     try {
       const user = await Auth.currentAuthenticatedUser();
-      const avatarImageUrl = await Storage.get("avatars/"+ user.username + '/avatar.jpg');
+      const avatarImageUrl = await Storage.get("users/"+ user.username + '/avatar.jpg');
       setAvatarImage(avatarImageUrl);
     } catch (error) {
       console.log('Error fetching avatar image:', error);
