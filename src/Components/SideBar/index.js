@@ -11,6 +11,10 @@ import { DEFAULT_STRINGS, DRAWER_WIDTH } from "utils/constants/common";
 import Proptypes from "prop-types";
 import Book from "@mui/icons-material/Book";
 import { getSyntaxMockData } from "utils/mockData";
+import { useState } from "react";
+import { Button, Collapse } from "@mui/material";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 // SideBar Styles
 const useStyles = makeStyles((theme) => ({
@@ -37,9 +41,28 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // SideBar Component
-// TODO: add parameter that is the change database function
+
 const SideBar = ({ showDrawer = false, items = [] }) => {
   const classes = useStyles();
+
+
+  const [selectedItem, setSelectedItem] = useState(null); // the selected catalogue
+  const [isOpen, setIsOpen] = useState(false); // whether or not the Catalogues dropdown is expanded or not
+  const [isTablesOpen, setIsTablesOpen] = useState(true); // whether or not the Tables dropdown is expanded or not
+
+  // function that gets called when a database list item is clicked
+  const handleItemClick = (item) => {
+    setSelectedItem(item);
+    // TODO: Add Configuration.setCatalogue to whatever name here
+  }
+
+  const toggleCatalogueDropdown = () => {
+    setIsOpen((value) => !value);
+  }
+
+  const toggleTableDropdown = () => {
+    setIsTablesOpen((value) => !value);
+  }
 
   return (
     <Drawer
@@ -52,34 +75,55 @@ const SideBar = ({ showDrawer = false, items = [] }) => {
       }}
       open={showDrawer}
     >
-      <Box p={2}>
-        <Typography variant="h6">Databases</Typography>
-      </Box>
-      <List>
-        {/* Add an attribute parameter that tells if the functions is selected or not. */}
-        <DatabaseSidebarListItem databaseName="Database 1"/>
-        <DatabaseSidebarListItem databaseName="Database 2"/>
-        <DatabaseSidebarListItem databaseName="Database I don't know maybe something really long"/>
-      </List>
-      <Box p={2}>
-        <Typography variant="h6">Tables</Typography>
-      </Box>
-      {items.length === 0 ? (
-        <EmptyState
-          title={DEFAULT_STRINGS.NO_TABLES_EXIST}
-          titleVariant="h6"
-          subtitle={DEFAULT_STRINGS.IMPORT_NEW_DATA_MESSAGE}
-        />
-      ) : (
+      <Button onClick={toggleCatalogueDropdown}>
+        <Box p={1}>
+          <Typography variant="h6">Catalogues</Typography>
+          <ExpandMoreIcon />
+        </Box>
+      </Button>
+      <Collapse in={isOpen}>
         <List>
-          {items.map((item, index) => (
-            <SidebarListItem
-              key={`${item.tableName}-${index}-table-metadata`}
-              listItem={item}
-            />
-          ))}
+          <DatabaseSidebarListItem
+            selected={selectedItem === "item1"}
+            item="item1"
+            onItemClick={handleItemClick}
+            databaseName="Database 1" />
+          <DatabaseSidebarListItem
+            databaseName="Database 2"
+            selected={selectedItem === "item2"}
+            item="item2"
+            onItemClick={handleItemClick} />
+          <DatabaseSidebarListItem
+            databaseName="Database I don't know maybe something really long"
+            selected={selectedItem === "item3"}
+            item="item3"
+            onItemClick={handleItemClick} />
         </List>
-      )}
+      </Collapse>
+      <Button onClick={toggleTableDropdown}>
+        <Box p={1}>
+          <Typography variant="h6">Tables</Typography>
+          <ExpandMoreIcon/>
+        </Box>
+      </Button>
+      <Collapse in={isTablesOpen}>
+        {items.length === 0 ? (
+          <EmptyState
+            title={DEFAULT_STRINGS.NO_TABLES_EXIST}
+            titleVariant="h6"
+            subtitle={DEFAULT_STRINGS.IMPORT_NEW_DATA_MESSAGE}
+          />
+        ) : (
+          <List>
+            {items.map((item, index) => (
+              <SidebarListItem
+                key={`${item.tableName}-${index}-table-metadata`}
+                listItem={item}
+              />
+            ))}
+          </List>
+        )}
+      </Collapse>
       <Box py={2}>
         <SidebarListItem
           listItem={getSyntaxMockData()}

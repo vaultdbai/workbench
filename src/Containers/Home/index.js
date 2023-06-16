@@ -25,7 +25,6 @@ const Home = () => {
 
   useEffect(() => {
     async function getMetadata() {
-      // TODO: Add parameter to getTablesMetaData that gives that certain database's tables.
       setTablesData(await getTablesMetaData());
     }
     // Configure application
@@ -94,7 +93,6 @@ const Home = () => {
           showDrawer={showDrawer}
         >
           {/* Content  for the Home page*/}
-          {/* TODO: Add database name as a attribute parameter for VaultDB */}
           <Vaultdb />
           <ImportFormDialog
             showDialog={showImportDialog}

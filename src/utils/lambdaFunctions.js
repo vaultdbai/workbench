@@ -1,13 +1,13 @@
 import Configration from "Configration";
 import AWS from "aws-sdk";
 
-// TODO: Add database name as a parameter
+
 const invokeLambdaFunction = (functionName, query) => {
   const payload = {
     token: Configration.getToken(),
     payload: query,
     catalog: Configration.getCatalog(),
-    database: Configration.getSchema(), // TODO: Then add database name into here.
+    database: Configration.getSchema(), 
   };
 
   const lambda = new AWS.Lambda();

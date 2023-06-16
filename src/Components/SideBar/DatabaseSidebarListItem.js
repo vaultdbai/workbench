@@ -18,10 +18,32 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const DatabaseSidebarListItem = ({databaseName}) => {
+
+const DatabaseSidebarListItem = ({ databaseName, item, selected, onItemClick }) => {
+
+  const handleItemClick = () => {
+    onItemClick(item);
+  }
+
+  // the styles used for database list items that are not selected
+  const listItemStyle = {
+    backgroundColor: 'transparent',
+    color: 'inherit',
+  };
+
+  // the style used for database list items that are selected.
+  const selectedListItemStyle = {
+    backgroundColor: 'secondary',
+    color: 'blue',
+  };
 
   return (
-    <ListItem button component="li" >
+    <ListItem
+      button
+      component="li"
+      selected={selected}
+      onClick={handleItemClick}
+      style={selected ? selectedListItemStyle : listItemStyle}>
       <ListItemIcon>
         <Storage />
       </ListItemIcon>

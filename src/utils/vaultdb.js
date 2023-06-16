@@ -1,13 +1,11 @@
 import { invokeLambdaFunction } from "utils/lambdaFunctions";
 
-// TODO: Incoroporate new parameter of database name
 async function getTablesMetaData() {
   try {
     // POST request using fetch with error handling
     const query =
       "select t.table_name, c.column_name from information_schema.tables t, information_schema.columns c where t.table_name=c.table_name";
 
-    // TODO: Add database name here and change the Lambda function as well.
     const result = await invokeLambdaFunction("execute-query", query);
     console.log(result);
     const tableresult = {};
