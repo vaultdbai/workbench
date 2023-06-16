@@ -20,10 +20,12 @@ const Home = () => {
   // Sidebar State to toggle drawer
   const [showDrawer, setShowDrawer] = useState(true);
   const [tablesData, setTablesData] = useState({});
+  // TODO: Add useState which gets and sets the current database name.
   const { user } = useAuthenticator((context) => [context.user]);
 
   useEffect(() => {
     async function getMetadata() {
+      // TODO: Add parameter to getTablesMetaData that gives that certain database's tables.
       setTablesData(await getTablesMetaData());
     }
     // Configure application
@@ -92,6 +94,7 @@ const Home = () => {
           showDrawer={showDrawer}
         >
           {/* Content  for the Home page*/}
+          {/* TODO: Add database name as a attribute parameter for VaultDB */}
           <Vaultdb />
           <ImportFormDialog
             showDialog={showImportDialog}

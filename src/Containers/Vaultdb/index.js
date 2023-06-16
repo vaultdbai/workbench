@@ -19,6 +19,7 @@ const Vaultdb = () => {
    * and updating store/context if required */
   const handleOnQueryRun = useCallback(async (query) => {
     try {
+      // TODO: Add database name parameter to function 
       const result = await invokeLambdaFunction("execute-query", query);
       console.log(result);
       if (result.Payload) {

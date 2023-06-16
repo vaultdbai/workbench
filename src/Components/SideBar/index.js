@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import clsx from "clsx";
 import EmptyState from "Components/EmptyState";
 import SidebarListItem from "Components/SideBar/SidebarListItem";
+import DatabaseSidebarListItem from "Components/SideBar/DatabaseSidebarListItem";
 import { DEFAULT_STRINGS, DRAWER_WIDTH } from "utils/constants/common";
 import Proptypes from "prop-types";
 import Book from "@mui/icons-material/Book";
@@ -36,6 +37,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // SideBar Component
+// TODO: add parameter that is the change database function
 const SideBar = ({ showDrawer = false, items = [] }) => {
   const classes = useStyles();
 
@@ -50,6 +52,15 @@ const SideBar = ({ showDrawer = false, items = [] }) => {
       }}
       open={showDrawer}
     >
+      <Box p={2}>
+        <Typography variant="h6">Databases</Typography>
+      </Box>
+      <List>
+        {/* Add an attribute parameter that tells if the functions is selected or not. */}
+        <DatabaseSidebarListItem databaseName="Database 1"/>
+        <DatabaseSidebarListItem databaseName="Database 2"/>
+        <DatabaseSidebarListItem databaseName="Database I don't know maybe something really long"/>
+      </List>
       <Box p={2}>
         <Typography variant="h6">Tables</Typography>
       </Box>
