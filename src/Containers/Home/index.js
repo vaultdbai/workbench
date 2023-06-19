@@ -23,6 +23,11 @@ const Home = () => {
   // TODO: Add useState which gets and sets the current database name.
   const { user } = useAuthenticator((context) => [context.user]);
 
+  const getDatabaseTables = async () => {
+    const tableData = await getTablesMetaData()
+    setTablesData(tableData);
+  }
+
   useEffect(() => {
     async function getMetadata() {
       setTablesData(await getTablesMetaData());
@@ -85,6 +90,7 @@ const Home = () => {
           }
           sideBar={
             <SideBar
+              changeCatalog={getDatabaseTables}
               showDrawer={showDrawer}
               items={sideBarItems}
               setShowDrawer={setShowDrawer}

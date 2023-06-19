@@ -15,6 +15,7 @@ import { useState } from "react";
 import { Button, Collapse } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Configuration from "Configration";
 
 // SideBar Styles
 const useStyles = makeStyles((theme) => ({
@@ -42,7 +43,7 @@ const useStyles = makeStyles((theme) => ({
 
 // SideBar Component
 
-const SideBar = ({ showDrawer = false, items = [] }) => {
+const SideBar = ({ showDrawer = false, items = [], changeCatalog = () => {} }) => {
   const classes = useStyles();
 
 
@@ -53,7 +54,10 @@ const SideBar = ({ showDrawer = false, items = [] }) => {
   // function that gets called when a database list item is clicked
   const handleItemClick = (item) => {
     setSelectedItem(item);
-    // TODO: Add Configuration.setCatalogue to whatever name here
+    Configuration.setCatalog(item);
+    Configuration.setSchema(item);
+    changeCatalog()
+    console.log("Changed catalog to " + Configuration.getCatalog());
   }
 
   const toggleCatalogueDropdown = () => {

@@ -33,8 +33,7 @@ const DatabaseSidebarListItem = ({ databaseName, item, selected, onItemClick }) 
 
   // the style used for database list items that are selected.
   const selectedListItemStyle = {
-    backgroundColor: 'secondary',
-    color: 'blue',
+    backgroundColor: 'lightGray',
   };
 
   return (
