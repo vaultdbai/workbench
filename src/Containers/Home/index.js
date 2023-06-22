@@ -8,7 +8,7 @@ import { useAuthenticator } from "@aws-amplify/ui-react";
 import Configration from "Configration";
 import ErrorBoundary from "Components/ErrorBoundary";
 import { AppContextProvider } from "context/AppContext";
-import { getTablesMetaData } from "utils/vaultdb";
+import { getTablesMetaData, getCataloguesMetaData } from "utils/vaultdb";
 
 /**
  * Home Component
@@ -20,6 +20,7 @@ const Home = () => {
   // Sidebar State to toggle drawer
   const [showDrawer, setShowDrawer] = useState(true);
   const [tablesData, setTablesData] = useState({});
+  const [catalogueData, setCatalogData] = useState([]);
   // TODO: Add useState which gets and sets the current database name.
   const { user } = useAuthenticator((context) => [context.user]);
 
@@ -28,10 +29,17 @@ const Home = () => {
     setTablesData(tableData);
   }
 
+  // When the sidebar initially loads, get the test catalogue's tables
+  // along with the user's catalogues.
   useEffect(() => {
     async function getMetadata() {
       setTablesData(await getTablesMetaData());
     }
+
+    async function getCatalogues() {
+      setCatalogData(await getCataloguesMetaData());
+    }
+
     // Configure application
     Configration.configure(
       window.APPLICATION_NAME,
@@ -45,7 +53,9 @@ const Home = () => {
     if (!idToken) console.log("User Does not exists");
     Configration.setUserCredentials(idToken);
     getMetadata();
+    getCatalogues();
   }, [user]);
+
 
   const toggleDrawerState = useCallback(() => {
     setShowDrawer((show) => !show);
@@ -93,6 +103,7 @@ const Home = () => {
               changeCatalog={getDatabaseTables}
               showDrawer={showDrawer}
               items={sideBarItems}
+              catalogues={catalogueData}
               setShowDrawer={setShowDrawer}
             />
           }

@@ -13,7 +13,6 @@ import Book from "@mui/icons-material/Book";
 import { getSyntaxMockData } from "utils/mockData";
 import { useState } from "react";
 import { Button, Collapse } from "@mui/material";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Configuration from "Configration";
 
@@ -43,7 +42,7 @@ const useStyles = makeStyles((theme) => ({
 
 // SideBar Component
 
-const SideBar = ({ showDrawer = false, items = [], changeCatalog = () => {} }) => {
+const SideBar = ({ showDrawer = false, items = [], catalogues = [], changeCatalog = () => { } }) => {
   const classes = useStyles();
 
 
@@ -55,7 +54,6 @@ const SideBar = ({ showDrawer = false, items = [], changeCatalog = () => {} }) =
   const handleItemClick = (item) => {
     setSelectedItem(item);
     Configuration.setCatalog(item);
-    Configuration.setSchema(item);
     changeCatalog()
     console.log("Changed catalog to " + Configuration.getCatalog());
   }
@@ -86,28 +84,28 @@ const SideBar = ({ showDrawer = false, items = [], changeCatalog = () => {} }) =
         </Box>
       </Button>
       <Collapse in={isOpen}>
-        <List>
-          <DatabaseSidebarListItem
-            selected={selectedItem === "item1"}
-            item="item1"
-            onItemClick={handleItemClick}
-            databaseName="Database 1" />
-          <DatabaseSidebarListItem
-            databaseName="Database 2"
-            selected={selectedItem === "item2"}
-            item="item2"
-            onItemClick={handleItemClick} />
-          <DatabaseSidebarListItem
-            databaseName="Database I don't know maybe something really long"
-            selected={selectedItem === "item3"}
-            item="item3"
-            onItemClick={handleItemClick} />
-        </List>
+        {catalogues.length === 0 ? (
+          <EmptyState
+            title="The title"
+            titleVariant="h6"
+            subtitle="The subtitle" />
+        ) : (
+          <List>
+            {catalogues.map((catalogue, index) => (
+              <DatabaseSidebarListItem
+                selected={selectedItem === `${catalogue}-${index}`}
+                key={`${catalogue}-${index}`}
+                item={`${catalogue}-${index}`}
+                onItemClick={handleItemClick}
+                databaseName={catalogue} />
+            ))}
+          </List>
+        )}
       </Collapse>
       <Button onClick={toggleTableDropdown}>
         <Box p={1}>
           <Typography variant="h6">Tables</Typography>
-          <ExpandMoreIcon/>
+          <ExpandMoreIcon />
         </Box>
       </Button>
       <Collapse in={isTablesOpen}>
@@ -144,4 +142,5 @@ export default SideBar;
 SideBar.propTypes = {
   items: Proptypes.array,
   showDrawer: Proptypes.bool.isRequired,
+  catalogues: Proptypes.array
 };
