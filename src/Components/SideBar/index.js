@@ -12,8 +12,9 @@ import Proptypes from "prop-types";
 import Book from "@mui/icons-material/Book";
 import { getSyntaxMockData } from "utils/mockData";
 import { useState } from "react";
-import { Button, Collapse } from "@mui/material";
+import { Button, Collapse, Fab, TextField } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import AddIcon from '@mui/icons-material/Add';
 import Configuration from "Configration";
 
 // SideBar Styles
@@ -49,6 +50,7 @@ const SideBar = ({ showDrawer = false, items = [], catalogues = [], changeCatalo
   const [selectedItem, setSelectedItem] = useState(null); // the selected catalogue
   const [isOpen, setIsOpen] = useState(false); // whether or not the Catalogues dropdown is expanded or not
   const [isTablesOpen, setIsTablesOpen] = useState(true); // whether or not the Tables dropdown is expanded or not
+  const [addCatalogueName, setAddCatalogueName] = useState('');
 
   // function that gets called when a database list item is clicked
   const handleItemClick = (item) => {
@@ -66,6 +68,37 @@ const SideBar = ({ showDrawer = false, items = [], catalogues = [], changeCatalo
     setIsTablesOpen((value) => !value);
   }
 
+  const handleInputChange = (event) => {
+    setAddCatalogueName(event.target.value);
+  }
+
+  // Don't accept catalogue name if it already exists and if it includes a period
+  let catalogeNameError = false;
+  let catalogNameHelperText = "";
+  if (catalogues.includes(addCatalogueName)) {
+    catalogNameHelperText = "That catalogue already exists";
+    catalogeNameError = true;
+  } else if (
+    addCatalogueName.includes(".") ||
+    addCatalogueName.includes("<") ||
+    addCatalogueName.includes(">") ||
+    addCatalogueName.includes(":") ||
+    addCatalogueName.includes("/") ||
+    addCatalogueName.includes("\\") ||
+    addCatalogueName.includes("|") ||
+    addCatalogueName.includes("?") ||
+    addCatalogueName.includes("*")
+  ) {
+    catalogNameHelperText = "Catalogue name cannot include punctuation or special characters";
+    catalogeNameError = true;
+  } else if (addCatalogueName.length > 50) {
+    catalogNameHelperText = "Catalogue name is too long!";
+    catalogeNameError = true;
+  } else {
+    catalogNameHelperText = "";
+    catalogeNameError = false;
+  }
+
   return (
     <Drawer
       variant="permanent"
@@ -77,12 +110,14 @@ const SideBar = ({ showDrawer = false, items = [], catalogues = [], changeCatalo
       }}
       open={showDrawer}
     >
+      {/* Large button labelled Catalogues that opens the list of catalogues */}
       <Button onClick={toggleCatalogueDropdown}>
         <Box p={1}>
           <Typography variant="h6">Catalogues</Typography>
           <ExpandMoreIcon />
         </Box>
       </Button>
+      {/* Contains the list of catalogues */}
       <Collapse in={isOpen}>
         {catalogues.length === 0 ? (
           <EmptyState
@@ -93,7 +128,7 @@ const SideBar = ({ showDrawer = false, items = [], catalogues = [], changeCatalo
           <List>
             {catalogues.map((catalogue, index) => (
               <DatabaseSidebarListItem
-                selected={selectedItem === `${catalogue}-${index}`}
+                selected={selectedItem === catalogue}
                 key={`${catalogue}-${index}`}
                 item={catalogue}
                 onItemClick={handleItemClick}
@@ -101,13 +136,31 @@ const SideBar = ({ showDrawer = false, items = [], catalogues = [], changeCatalo
             ))}
           </List>
         )}
+        {/* The text field where a user can add a new catalogue name */}
+        <Box display="flex" alignItems="center">
+          <TextField
+            label="Add catalogue"
+            value={addCatalogueName}
+            onChange={handleInputChange}
+            error={catalogeNameError}
+            helperText={catalogNameHelperText}
+          />
+          <Fab
+            disabled={catalogeNameError || addCatalogueName.length <= 0}
+            size="small"
+            sx={{ padding: "20px" }}>
+            <AddIcon></AddIcon>
+          </Fab>
+        </Box>
       </Collapse>
+      {/* Large button that opens the list of the current catalogue's tables */}
       <Button onClick={toggleTableDropdown}>
         <Box p={1}>
           <Typography variant="h6">Tables</Typography>
           <ExpandMoreIcon />
         </Box>
       </Button>
+      {/* Contains the list of tables of the current catalogue */}
       <Collapse in={isTablesOpen}>
         {items.length === 0 ? (
           <EmptyState
