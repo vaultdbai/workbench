@@ -52,8 +52,8 @@ const Home = () => {
     const idToken = user?.signInUserSession?.idToken;
     if (!idToken) console.log("User Does not exists");
     Configration.setUserCredentials(idToken);
-    getMetadata();
     getCatalogues();
+    getMetadata();
   }, [user]);
 
 

@@ -51,8 +51,6 @@ async function getCataloguesMetaData() {
 
     const result = await invokeLambdaFunction("fetch-catalogues", query);
 
-
-
     // Parse the JSON results and return it so we can output the list of catalogues.
 
     let catalogueList = [];

@@ -86,16 +86,16 @@ const SideBar = ({ showDrawer = false, items = [], catalogues = [], changeCatalo
       <Collapse in={isOpen}>
         {catalogues.length === 0 ? (
           <EmptyState
-            title="The title"
+            title={DEFAULT_STRINGS.NO_CATALOGUE_EXIST}
             titleVariant="h6"
-            subtitle="The subtitle" />
+            subtitle={DEFAULT_STRINGS.CREATE_NEW_CATALOGUE_MESSAGE} />
         ) : (
           <List>
             {catalogues.map((catalogue, index) => (
               <DatabaseSidebarListItem
                 selected={selectedItem === `${catalogue}-${index}`}
                 key={`${catalogue}-${index}`}
-                item={`${catalogue}-${index}`}
+                item={catalogue}
                 onItemClick={handleItemClick}
                 databaseName={catalogue} />
             ))}
