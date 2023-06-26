@@ -86,6 +86,7 @@ const SideBar = ({
   // and clicks the + button
   const addCatalogue = () => {
     addAndFetchCat(addCatalogueName);
+    setAddCatalogueName('');
   }
 
   // Don't accept catalogue name if it already exists and if it includes any punctuation
