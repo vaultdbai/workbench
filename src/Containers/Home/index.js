@@ -8,7 +8,7 @@ import { useAuthenticator } from "@aws-amplify/ui-react";
 import Configration from "Configration";
 import ErrorBoundary from "Components/ErrorBoundary";
 import { AppContextProvider } from "context/AppContext";
-import { getTablesMetaData, getCataloguesMetaData } from "utils/vaultdb";
+import { getTablesMetaData, getCataloguesMetaData, addCatalogue } from "utils/vaultdb";
 
 /**
  * Home Component
@@ -21,12 +21,21 @@ const Home = () => {
   const [showDrawer, setShowDrawer] = useState(true);
   const [tablesData, setTablesData] = useState({});
   const [catalogueData, setCatalogData] = useState([]);
-  // TODO: Add useState which gets and sets the current database name.
+
   const { user } = useAuthenticator((context) => [context.user]);
 
+  // Called when a user switches from one catalogue to another
   const getDatabaseTables = async () => {
     const tableData = await getTablesMetaData()
     setTablesData(tableData);
+  }
+
+  const addAndFetchCatalogues = async (catalogue) => {
+    const result = setCatalogData(await addCatalogue(catalogue));
+    console.log(result);
+
+    const tableData = await getCataloguesMetaData();
+    setCatalogData(tableData);
   }
 
   // When the sidebar initially loads, get the test catalogue's tables
@@ -101,6 +110,7 @@ const Home = () => {
           sideBar={
             <SideBar
               changeCatalog={getDatabaseTables}
+              addAndFetchCat={addAndFetchCatalogues}
               showDrawer={showDrawer}
               items={sideBarItems}
               catalogues={catalogueData}

@@ -41,8 +41,8 @@ async function getTablesMetaData() {
 }
 
 /**
- * 
- * @returns The list if catalogue names 
+ * Fetches the list of catalogue names
+ * @returns The list if catalogue names in an array
  */
 async function getCataloguesMetaData() {
   try {
@@ -73,4 +73,17 @@ async function getCataloguesMetaData() {
   }
 }
 
-export { getTablesMetaData, getCataloguesMetaData };
+async function addCatalogue(catalogueName) {
+  try {
+
+    const query = "INSERT INTO catalogues VALUES ('" + catalogueName + "');" 
+
+    const result = await invokeLambdaFunction("fetch-catalogues", query);
+
+    console.log(result);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export { getTablesMetaData, getCataloguesMetaData, addCatalogue};

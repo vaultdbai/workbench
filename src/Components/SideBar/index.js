@@ -44,7 +44,13 @@ const useStyles = makeStyles((theme) => ({
 
 // SideBar Component
 
-const SideBar = ({ showDrawer = false, items = [], catalogues = [], changeCatalog = () => { } }) => {
+const SideBar = ({
+  showDrawer = false,
+  items = [],
+  catalogues = [],
+  changeCatalog = () => { },
+  addAndFetchCat = () => { }
+}) => {
   const classes = useStyles();
 
 
@@ -76,8 +82,10 @@ const SideBar = ({ showDrawer = false, items = [], catalogues = [], changeCatalo
     setAddCatalogueName(event.target.value);
   }
 
+  // gets called when the user enters a valid catalogue name into the input field
+  // and clicks the + button
   const addCatalogue = () => {
-    console.log(addCatalogueName);
+    addAndFetchCat(addCatalogueName);
   }
 
   // Don't accept catalogue name if it already exists and if it includes any punctuation
