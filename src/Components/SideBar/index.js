@@ -61,16 +61,23 @@ const SideBar = ({ showDrawer = false, items = [], catalogues = [], changeCatalo
     console.log("Changed catalog to " + Configuration.getCatalog());
   }
 
+  // gets called when Catalogues button is clicked. Expands or collapses list of catalogues
   const toggleCatalogueDropdown = () => {
     setIsOpen((value) => !value);
   }
 
+  // gets called when Catalogues button is clicked. Expands or collapses list of catalogues
   const toggleTableDropdown = () => {
     setIsTablesOpen((value) => !value);
   }
 
+  // gets called whenever the Add catalogue input field has changed
   const handleInputChange = (event) => {
     setAddCatalogueName(event.target.value);
+  }
+
+  const addCatalogue = () => {
+    console.log(addCatalogueName);
   }
 
   // Don't accept catalogue name if it already exists and if it includes any punctuation
@@ -116,7 +123,7 @@ const SideBar = ({ showDrawer = false, items = [], catalogues = [], changeCatalo
     >
       <Scrollbar style={{ height: "100%" }}>
         {/* Large button labelled Catalogues that opens the list of catalogues */}
-        <Stack direction='column' spacing={1}>
+        <Stack direction='column' >
           <Button onClick={toggleCatalogueDropdown} sx={{ width: "100%" }}>
             <Box p={1}>
               <Typography variant="h6">Catalogues</Typography>
@@ -142,25 +149,31 @@ const SideBar = ({ showDrawer = false, items = [], catalogues = [], changeCatalo
                 ))}
               </List>
             )}
-            {/* The text field where a user can add a new catalogue name */}
-            <Box display="flex" alignItems="center">
-              <TextField
-                label="Add catalogue"
-                value={addCatalogueName}
-                onChange={handleInputChange}
-                error={catalogeNameError}
-                helperText={catalogNameHelperText}
-              />
-              <Fab
-                disabled={catalogeNameError || addCatalogueName.length <= 0}
-                size="small"
-                sx={{ padding: "20px" }}>
-                <AddIcon></AddIcon>
-              </Fab>
-            </Box>
           </Collapse>
+          {/* The text field where a user can add a new catalogue name along with a button to add it */}
+          <Box display="flex" alignItems="center" marginTop={1}>
+            <TextField
+              label="Add catalogue"
+              value={addCatalogueName}
+              onChange={handleInputChange}
+              error={catalogeNameError}
+              helperText={catalogNameHelperText}
+              sx={{
+                '& .MuiFormHelperText-root': {
+                  whiteSpace: 'normal' // Wrap helper text to the next line
+                }
+              }}
+            />
+            <Fab
+              disabled={catalogeNameError || addCatalogueName.length <= 0}
+              size="small"
+              sx={{ padding: "20px" }}
+              onClick={addCatalogue}>
+              <AddIcon></AddIcon>
+            </Fab>
+          </Box>
           {/* Large button that opens the list of the current catalogue's tables */}
-          <Button onClick={toggleTableDropdown} sx={{ width: "100%" }}>
+          <Button onClick={toggleTableDropdown} sx={{ width: "100%", marginTop: "50px" }}>
             <Box p={1}>
               <Typography variant="h6">Tables</Typography>
               <ExpandMoreIcon />
