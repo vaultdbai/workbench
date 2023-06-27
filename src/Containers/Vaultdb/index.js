@@ -57,7 +57,7 @@ const Vaultdb = () => {
 
   return (
     <Box display="flex" height="100%" width="100%" flexDirection="column">
-      <QueryEditor onRunQuery={handleOnQueryRun} />
+      <QueryEditor onRunQuery={handleOnQueryRun} exportDisabled={!queryResults} />
       {!queryResults ? (
         <EmptyState
           icon={<DnsIcon fontSize="large" />}

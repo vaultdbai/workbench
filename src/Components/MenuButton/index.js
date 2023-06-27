@@ -8,7 +8,7 @@ import Button from "@mui/material/Button";
 import { noop } from "utils/constants/common";
 import PropTypes from "prop-types";
 
-const MenuButton = ({ title = "", menuItems = [], onMenuItemClick = noop }) => {
+const MenuButton = ({ title = "", menuItems = [], onMenuItemClick = noop, disabled = true }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const classes = useMenuStyles();
@@ -23,6 +23,7 @@ const MenuButton = ({ title = "", menuItems = [], onMenuItemClick = noop }) => {
 
   const handleMenuItemClick = (item) => {
     onMenuItemClick(item);
+    console.log(item);
     handleClose();
   };
 
@@ -35,6 +36,7 @@ const MenuButton = ({ title = "", menuItems = [], onMenuItemClick = noop }) => {
         aria-controls="simple-menu"
         aria-haspopup="true"
         onClick={handleClick}
+        disabled={disabled}
       >
         <GetAppRoundedIcon className={classes.downloadIcon} />
         <span>{title}</span>
@@ -79,4 +81,5 @@ MenuButton.propTypes = {
   title: PropTypes.string.isRequired,
   menuItems: PropTypes.array.isRequired,
   onMenuItemClick: PropTypes.func,
+  disabled: PropTypes.bool
 };

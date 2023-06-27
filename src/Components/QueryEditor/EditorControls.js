@@ -35,6 +35,7 @@ const EditorControls = ({
   editorTabs = [],
   updateEditorTabs = noop,
   onRunQuery = noop,
+  exportButtonDisabled = true
 }) => {
   const classes = useStyles();
 
@@ -62,6 +63,7 @@ const EditorControls = ({
           Run Query
         </Button>
         <MenuButton
+          disabled={exportButtonDisabled}
           title="EXPORT"
           menuItems={["CSV File", "XML File", "JSON File"]}
         />
@@ -75,4 +77,5 @@ EditorControls.propTypes = {
   editorTabs: PropTypes.array,
   updateEditorTabs: PropTypes.func.isRequired,
   onRunQuery: PropTypes.func.isRequired,
+  exportButtonDisabled: PropTypes.bool
 };

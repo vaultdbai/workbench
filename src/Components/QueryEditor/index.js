@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const QueryEditor = ({ onRunQuery = noop }) => {
+const QueryEditor = ({ onRunQuery = noop, exportDisabled = true }) => {
   const classes = useStyles();
 
   const { currentQuery, handleQueryChange, editorTabs, updateEditorTabs } =
@@ -49,6 +49,7 @@ const QueryEditor = ({ onRunQuery = noop }) => {
         editorTabs={editorTabs}
         updateEditorTabs={updateEditorTabs}
         onRunQuery={handleRunQuery}
+        exportButtonDisabled={exportDisabled}
       />
       <Suspense fallback={<EditorLoader />}>
         <LazyEditor
@@ -85,4 +86,5 @@ export default QueryEditor;
 
 QueryEditor.propTypes = {
   onRunQuery: PropTypes.func.isRequired,
+  exportDisabled: PropTypes.bool
 };
