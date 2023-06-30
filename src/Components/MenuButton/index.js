@@ -7,8 +7,15 @@ import Menu from "@mui/material/Menu";
 import Button from "@mui/material/Button";
 import { noop } from "utils/constants/common";
 import PropTypes from "prop-types";
+import { exportQueryResults } from "utils/vaultdb";
 
-const MenuButton = ({ title = "", menuItems = [], onMenuItemClick = noop, disabled = true }) => {
+const MenuButton = ({ 
+  title = "", 
+  menuItems = [], 
+  onMenuItemClick = noop, 
+  disabled = true, 
+  activeQuery = ''
+}) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const classes = useMenuStyles();
@@ -24,6 +31,7 @@ const MenuButton = ({ title = "", menuItems = [], onMenuItemClick = noop, disabl
   const handleMenuItemClick = (item) => {
     onMenuItemClick(item);
     console.log(item);
+    exportQueryResults(activeQuery,item);
     handleClose();
   };
 
@@ -81,5 +89,6 @@ MenuButton.propTypes = {
   title: PropTypes.string.isRequired,
   menuItems: PropTypes.array.isRequired,
   onMenuItemClick: PropTypes.func,
-  disabled: PropTypes.bool
+  disabled: PropTypes.bool,
+  activeQuery: PropTypes.string
 };

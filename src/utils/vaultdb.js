@@ -40,4 +40,22 @@ async function getTablesMetaData() {
   }
 }
 
-export { getTablesMetaData };
+async function exportQueryResults(queryToExport, typeOfFile) {
+
+  try {
+    // This only works with CSV files and single line queries that don't end with a semicolon.
+    // TODO: Make this function be able to work with any-line query and 
+    const modifiedQueryToExport = "COPY (" + queryToExport + ") TO '/tmp/output.csv' (HEADER, DELIMITER ',');"
+
+    console.log(modifiedQueryToExport);
+
+    const result = await invokeLambdaFunction("execute-query", modifiedQueryToExport);
+
+    console.log(result);
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export { getTablesMetaData, exportQueryResults };

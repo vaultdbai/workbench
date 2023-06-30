@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useState } from "react";
 import Box from "@mui/material/Box";
 import makeStyles from "@mui/styles/makeStyles";
 import Toast from "Components/Toast";
@@ -33,6 +33,7 @@ const QueryEditor = ({ onRunQuery = noop, exportDisabled = true }) => {
   const { currentQuery, handleQueryChange, editorTabs, updateEditorTabs } =
     useActiveQueryEditor();
   const { isToastVisible, showToast, toastType, toastMessage } = useToast();
+  const [activeQuery, setActiveQuery] = useState('');
 
   const handleRunQuery = () => {
     if (!currentQuery) {
@@ -40,17 +41,21 @@ const QueryEditor = ({ onRunQuery = noop, exportDisabled = true }) => {
       return;
     }
     onRunQuery(currentQuery);
+    setActiveQuery(currentQuery);
     showToast(TOAST_SUCCESS, "Query Ran Successfully");
   };
 
   return (
     <Box>
+      {/* Contains the Home button with tabs along with Run Query button and Export button */}
       <EditorControls
         editorTabs={editorTabs}
         updateEditorTabs={updateEditorTabs}
         onRunQuery={handleRunQuery}
         exportButtonDisabled={exportDisabled}
+        activeQuery={activeQuery}
       />
+      {/* The actual SQL editon */}
       <Suspense fallback={<EditorLoader />}>
         <LazyEditor
           aria-label="query editor input"
