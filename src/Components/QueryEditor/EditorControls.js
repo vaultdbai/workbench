@@ -67,7 +67,7 @@ const EditorControls = ({
           disabled={exportButtonDisabled}
           activeQuery={activeQuery}
           title="EXPORT"
-          menuItems={["CSV File", "XML File", "JSON File"]}
+          menuItems={["CSV File"/*, "JSON File", "Parquet File", "Excel File"*/]} // TODO: Try to figure out a way to export these kinds of files
         />
       </Box>
     </Paper>

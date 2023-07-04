@@ -46,31 +46,51 @@ async function exportQueryResults(queryToExport, typeOfFile) {
     "CSV File": ".csv",
     "JSON File": ".json",
     "Parquet File": ".parquet",
-    "Excel File": ".xlxs"
+    "Excel File": ".xlsx"
   }
 
   try {
 
-    const fileType = fileConverter[typeOfFile];
+    // First only get the last query (the last semicolon statement) 
+    //as that is the only query shown on screen
+    const listOfStatements = queryToExport.trim().split(";");
+    let lastQuery = "";
+
+    for (let i = listOfStatements.length - 1; i >= 0; i--) {
+      const statement = listOfStatements[i].trim();
+      if (statement !== "") { // we've found our last statement
+        lastQuery = statement;
+        i = -1;
+      }
+    }
+
+    const fileSuffix = fileConverter[typeOfFile];
 
     let modifiedQueryToExport = "";
 
-    // This only works with CSV files and single line queries that don't end with a semicolon.
-    // TODO: Make this function be able to work with any-line query and CSV, JSON, PARQUET, or XLXS file
-
-    modifiedQueryToExport = "COPY (" + queryToExport + ") TO '/mnt/commitlog/output.csv' (HEADER, DELIMITER ',');"
+    if (fileSuffix === ".csv") {
+      modifiedQueryToExport = "COPY (" + lastQuery + ") TO '/mnt/commitlog/output.csv' (HEADER, DELIMITER ',');";
+    } else if (fileSuffix === ".json") {
+      modifiedQueryToExport = "install json;\n"
+                            + "load json;\n"
+                            + "COPY (" + lastQuery + ") TO '/mnt/commitlog/output.json';";
+    } else if (fileSuffix === ".parquet") {
+      modifiedQueryToExport = "COPY (" + lastQuery + ") TO '/mnt/commitlog/output.parquet' (FORMAT PARQUET);";
+    } else if (fileSuffix === ".xlsx") {
+      modifiedQueryToExport = "install spatial;\n" 
+                            + "load spatial;\n"
+                            + "COPY (" + lastQuery + ") TO '/mnt/commitlog/output.xlsx' WITH (FORMAT GDAL, DRIVER 'xlsx');";
+    }
 
     console.log(modifiedQueryToExport);
 
-    // First execute the COPY query to create an output file
+    // Now execute the COPY query to create an output file
     const result = await invokeLambdaFunction("execute-query", modifiedQueryToExport);
     console.log(result);
 
     // Then extract the copy query from the file. Make sure to add the file type as a parameter.
-    // TODO: Add functionality to include the query execution in export-query lambda function.
-    // TODO: Add functionality to retrieve typeOfFile from the client as different files have different tastes.
-    // TODO: Handle errors where the file could not be retrieved or the query does not output.
-    const result2 = await invokeLambdaFunction("export-query",typeOfFile);
+    // TODO: Handle errors where the file could not be retrieved in AWS Lambda function
+    const result2 = await invokeLambdaFunction("export-query",fileSuffix);
     console.log(result2);
 
     if (result2.Payload) {
@@ -80,7 +100,7 @@ async function exportQueryResults(queryToExport, typeOfFile) {
       const fileContent = tabledata.body;
       console.log(fileContent);
 
-      const fileName = "output.csv";
+      const fileName = "output" + fileSuffix;
       downloadFile(fileName,fileContent);
     }  
     
