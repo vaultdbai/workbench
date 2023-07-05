@@ -4,6 +4,8 @@ import Toolbar from "@mui/material/Toolbar";
 import { styled } from "@mui/material/styles";
 import { DRAWER_WIDTH } from "utils/constants/common";
 
+// Main body styles changes width depending on whether either or both 
+// Sidebars are open or not.
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
   ({ theme, open, rightOpen }) => ({
     flexGrow: 1,

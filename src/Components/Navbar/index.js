@@ -63,6 +63,8 @@ function stringAvatar(name) {
   };
 }
 
+// Nav bar styles changes width depending on whether either or both 
+// Sidebars are open or not.
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open, rightOpen }) => ({
