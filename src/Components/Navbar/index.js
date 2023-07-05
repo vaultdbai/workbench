@@ -18,6 +18,7 @@ import { DEFAULT_STRINGS, noop, DRAWER_WIDTH } from "utils/constants/common";
 import PropTypes from "prop-types";
 import { Authenticator } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
+import { FileOpen } from "@mui/icons-material";
 
 // Navbar styles
 const useStyles = makeStyles((theme) => ({
@@ -82,6 +83,7 @@ const AppBar = styled(MuiAppBar, {
 const Navbar = ({
   onMenuButtonClick = noop,
   onImportButtonClick = noop,
+  onFileButtonClick = noop,
   showDrawer = true,
 }) => {
   const classes = useStyles();
@@ -105,6 +107,14 @@ const Navbar = ({
           aria-label="sidebar menu"
         >
           <MenuIcon />
+        </IconButton>
+        <IconButton
+          className={classes.menuButton}
+          onClick={onFileButtonClick}
+          edge="start"
+          aria-label="filebar menu"
+        >
+          <FileOpen/>
         </IconButton>
         <Typography
           className={classes.navTitle}

@@ -26,10 +26,11 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
 
 // Home Page Layout
 // we can have different page layouts created for different devices , routes, pages etc
-const HomePageLayout = ({ children, navBar, sideBar, showDrawer }) => {
+const HomePageLayout = ({ children, navBar, sideBar,rightSideBar, showDrawer }) => {
   return (
     <Box height="100vh" width="100vw">
       {/*  navigation Bar goes here */}
+      {rightSideBar}
       {navBar}
       {sideBar}
       <Main open={showDrawer}>
@@ -45,6 +46,7 @@ HomePageLayout.propTypes = {
   // componets for nav and sider
   navBar: PropTypes.element.isRequired,
   sideBar: PropTypes.element.isRequired,
+  rightSideBar: PropTypes.element.isRequired,
   children: PropTypes.arrayOf(PropTypes.element), // page contents
   showDrawer: PropTypes.bool.isRequired,
 };

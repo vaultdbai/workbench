@@ -1,6 +1,7 @@
 import ImportFormDialog from "Components/ImportFormDialog";
 import Navbar from "Components/Navbar";
 import SideBar from "Components/SideBar";
+import FileSideBar from "Components/FileSideBar";
 import Vaultdb from "Containers/Vaultdb";
 import HomePageLayout from "layouts/HomePageLayout";
 import { useCallback, useMemo, useState, useEffect } from "react";
@@ -19,6 +20,7 @@ import { getTablesMetaData } from "utils/vaultdb";
 const Home = () => {
   // Sidebar State to toggle drawer
   const [showDrawer, setShowDrawer] = useState(true);
+  const [showRightDrawer , setShowRightDrawer] = useState(false);
   const [tablesData, setTablesData] = useState({});
   const { user } = useAuthenticator((context) => [context.user]);
 
@@ -40,6 +42,10 @@ const Home = () => {
     Configration.setUserCredentials(idToken);
     getMetadata();
   }, [user]);
+
+  const toggleRightDrawerState = useCallback(() => {
+    setShowRightDrawer((show) => !show);
+  }, [setShowRightDrawer]);
 
   const toggleDrawerState = useCallback(() => {
     setShowDrawer((show) => !show);
@@ -73,6 +79,7 @@ const Home = () => {
           navBar={
             <Navbar
               onMenuButtonClick={toggleDrawerState}
+              onFileButtonClick={toggleRightDrawerState}
               onImportButtonClick={toggleImportDialogState}
               showDrawer={showDrawer}
             />
@@ -82,6 +89,13 @@ const Home = () => {
               showDrawer={showDrawer}
               items={sideBarItems}
               setShowDrawer={setShowDrawer}
+            />
+          }
+          rightSideBar={
+            <FileSideBar
+              showDrawer={showRightDrawer}
+              items={sideBarItems}
+              setShowDrawer={setShowRightDrawer}
             />
           }
           showDrawer={showDrawer}
