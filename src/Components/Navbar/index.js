@@ -65,7 +65,7 @@ function stringAvatar(name) {
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
+})(({ theme, open, rightOpen }) => ({
   transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -78,6 +78,23 @@ const AppBar = styled(MuiAppBar, {
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
+  ...(rightOpen && {
+    width: `calc(100% - ${DRAWER_WIDTH}px)`,
+    marginRight: `${DRAWER_WIDTH}px`,
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+  ...(open && rightOpen && {
+    width: `calc(100% - ${2 * DRAWER_WIDTH}px)`,
+    marginLeft: `${DRAWER_WIDTH}px`,
+    marginRight: `${DRAWER_WIDTH}px`,
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
 }));
 
 const Navbar = ({
@@ -85,6 +102,7 @@ const Navbar = ({
   onImportButtonClick = noop,
   onFileButtonClick = noop,
   showDrawer = true,
+  showRightDrawer = false
 }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -97,7 +115,7 @@ const Navbar = ({
   };
 
   return (
-    <AppBar position="absolute" className={classes.appBar} open={showDrawer}>
+    <AppBar position="absolute" className={classes.appBar} open={showDrawer} rightOpen={showRightDrawer}>
       <Toolbar>
         <IconButton
           className={classes.menuButton}
@@ -197,4 +215,5 @@ Navbar.propTypes = {
   onMenuButtonClick: PropTypes.func.isRequired,
   onImportButtonClick: PropTypes.func.isRequired,
   showDrawer: PropTypes.bool.isRequired,
+  showRightDrawer: PropTypes.bool.isRequired
 };

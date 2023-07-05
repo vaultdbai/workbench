@@ -82,6 +82,7 @@ const Home = () => {
               onFileButtonClick={toggleRightDrawerState}
               onImportButtonClick={toggleImportDialogState}
               showDrawer={showDrawer}
+              showRightDrawer={showRightDrawer}
             />
           }
           sideBar={
@@ -99,6 +100,7 @@ const Home = () => {
             />
           }
           showDrawer={showDrawer}
+          showRightDrawer={showRightDrawer}
         >
           {/* Content  for the Home page*/}
           <Vaultdb />
