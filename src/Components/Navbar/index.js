@@ -67,7 +67,7 @@ function stringAvatar(name) {
 // Sidebars are open or not.
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open, rightOpen }) => ({
+})(({ theme, open, rightopen }) => ({
   transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -80,7 +80,7 @@ const AppBar = styled(MuiAppBar, {
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
-  ...(rightOpen && {
+  ...(rightopen && {
     width: `calc(100% - ${DRAWER_WIDTH}px)`,
     marginRight: `${DRAWER_WIDTH}px`,
     transition: theme.transitions.create(["margin", "width"], {
@@ -88,7 +88,7 @@ const AppBar = styled(MuiAppBar, {
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
-  ...(open && rightOpen && {
+  ...(open && rightopen && {
     width: `calc(100% - ${2 * DRAWER_WIDTH}px)`,
     marginLeft: `${DRAWER_WIDTH}px`,
     marginRight: `${DRAWER_WIDTH}px`,
@@ -117,7 +117,7 @@ const Navbar = ({
   };
 
   return (
-    <AppBar position="absolute" className={classes.appBar} open={showDrawer} rightOpen={showRightDrawer}>
+    <AppBar position="absolute" className={classes.appBar} open={showDrawer} rightopen={showRightDrawer}>
       <Toolbar>
         <IconButton
           className={classes.menuButton}

@@ -45,6 +45,12 @@ const useStyles = makeStyles((theme) => ({
 const FileSideBar = ({ showDrawer = true, items = [] }) => {
   const classes = useStyles();
 
+  const [isExportFilesOpen, setIsExportFilesOpen] = useState(true); // whether or not the Exported Files List Collapes is expanded
+
+  const toggleExportDropdown = () => {
+    setIsExportFilesOpen((value) => !value);
+  }
+
   return (
     <Drawer
       anchor="right"
@@ -57,35 +63,30 @@ const FileSideBar = ({ showDrawer = true, items = [] }) => {
       }}
       open={showDrawer}
     >
-      <Button sx={{ width: "100%" }}>
+      <Button onClick={toggleExportDropdown} sx={{ width: "100%" }}>
         <Box p={1}>
           <Typography variant="h6">Exported Files</Typography>
           <ExpandMoreIcon />
         </Box>
       </Button>
-      {items.length === 0 ? (
-        <EmptyState
-          title={DEFAULT_STRINGS.NO_TABLES_EXIST}
-          titleVariant="h6"
-          subtitle={DEFAULT_STRINGS.IMPORT_NEW_DATA_MESSAGE}
-        />
-      ) : (
-        <List>
-          {items.map((item, index) => (
-            <SidebarListItem
-              key={`${item.tableName}-${index}-table-metadata`}
-              listItem={item}
-            />
-          ))}
-        </List>
-      )}
-      <Box py={2}>
-        <SidebarListItem
-          listItem={getSyntaxMockData()}
-          icon={<Book />}
-          subtitle={"Queries"}
-        />
-      </Box>
+      <Collapse in={isExportFilesOpen}>
+        {items.length === 0 ? (
+          <EmptyState
+            title={DEFAULT_STRINGS.NO_TABLES_EXIST}
+            titleVariant="h6"
+            subtitle={DEFAULT_STRINGS.IMPORT_NEW_DATA_MESSAGE}
+          />
+        ) : (
+          <List>
+            {items.map((item, index) => (
+              <SidebarListItem
+                key={`${item.tableName}-${index}-table-metadata`}
+                listItem={item}
+              />
+            ))}
+          </List>
+        )}
+      </Collapse>
     </Drawer>
   );
 };

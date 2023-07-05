@@ -7,7 +7,7 @@ import { DRAWER_WIDTH } from "utils/constants/common";
 // Main body styles changes width depending on whether either or both 
 // Sidebars are open or not.
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
-  ({ theme, open, rightOpen }) => ({
+  ({ theme, open, rightopen }) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
     transition: theme.transitions.create("margin", {
@@ -23,7 +23,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
       width: `calc(100% - ${DRAWER_WIDTH}px)`,
       marginLeft: `${DRAWER_WIDTH}px`,
     }),
-    ...(rightOpen && {
+    ...(rightopen && {
       transition: theme.transitions.create("margin", {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
@@ -31,7 +31,7 @@ const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })(
       width: `calc(100% - ${DRAWER_WIDTH}px)`,
       marginRight: `${DRAWER_WIDTH}px`,
     }),
-    ...(open && rightOpen && {
+    ...(open && rightopen && {
       transition: theme.transitions.create("margin", {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
@@ -51,7 +51,7 @@ const HomePageLayout = ({ children, navBar, sideBar, rightSideBar, showDrawer, s
       {rightSideBar}
       {navBar}
       {sideBar}
-      <Main open={showDrawer} rightOpen={showRightDrawer}>
+      <Main open={showDrawer} rightopen={showRightDrawer}>
         <Toolbar />
         {/* Content goes here */}
         {children}
