@@ -128,14 +128,6 @@ const Navbar = ({
         >
           <MenuIcon />
         </IconButton>
-        <IconButton
-          className={classes.menuButton}
-          onClick={onFileButtonClick}
-          edge="start"
-          aria-label="filebar menu"
-        >
-          <FileOpen/>
-        </IconButton>
         <Typography
           className={classes.navTitle}
           color="textPrimary"
@@ -206,6 +198,15 @@ const Navbar = ({
             </React.Fragment>
           )}
         </Authenticator>
+        <IconButton
+          sx={{marginLeft: "15px"}}
+          className={classes.menuButton}
+          onClick={onFileButtonClick}
+          edge="start"
+          aria-label="filebar menu"
+        >
+          <FileOpen/>
+        </IconButton>
       </Toolbar>
     </AppBar>
   );

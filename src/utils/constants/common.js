@@ -29,6 +29,8 @@ export const DEFAULT_STRINGS = {
   SIGN_OUT: "Sign Out",
   NO_TABLES_EXIST: "No table exists",
   IMPORT_NEW_DATA_MESSAGE: "Please import data to the Editor",
+  NO_EXPORTED_FILES_EXIST: "No exported files exist",
+  EXPORT_FILE_MESSAGE: "Export a file by executing a query and clicking the Export button",
   QUERY_EDITOR_PLACEHOLDER: "Write Query Here ...",
   IMPORT_DATA_DIALOG_TITLE: "Import Data",
   IMPORT_DATA_HELP_TEXT:

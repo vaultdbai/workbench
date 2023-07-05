@@ -72,12 +72,13 @@ const FileSideBar = ({ showDrawer = true, items = [] }) => {
       <Collapse in={isExportFilesOpen}>
         {items.length === 0 ? (
           <EmptyState
-            title={DEFAULT_STRINGS.NO_TABLES_EXIST}
+            title={DEFAULT_STRINGS.NO_EXPORTED_FILES_EXIST}
             titleVariant="h6"
-            subtitle={DEFAULT_STRINGS.IMPORT_NEW_DATA_MESSAGE}
+            subtitle={DEFAULT_STRINGS.EXPORT_FILE_MESSAGE}
           />
         ) : (
           <List>
+            {/* Create a FileListItem Component that has File name..? S3 bucket path and button to download and Copy S3 URI path */}
             {items.map((item, index) => (
               <SidebarListItem
                 key={`${item.tableName}-${index}-table-metadata`}

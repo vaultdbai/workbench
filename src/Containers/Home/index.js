@@ -95,7 +95,7 @@ const Home = () => {
           rightSideBar={
             <FileSideBar
               showDrawer={showRightDrawer}
-              items={sideBarItems}
+              items={[]}
               setShowDrawer={setShowRightDrawer}
             />
           }
