@@ -17,8 +17,8 @@ import Box from "@mui/material/Box";
 import Tooltip from "@mui/material/Tooltip";
 import { DEFAULT_STRINGS } from "utils/constants/common";
 import PropTypes from "prop-types";
-import { Button, Container } from "@mui/material";
-import { Margin } from "@mui/icons-material";
+import { Button, Container, Stack } from "@mui/material";
+import { ContentCopy, Download, Margin } from "@mui/icons-material";
 
 const useStyles = makeStyles((theme) => ({
   nested: {
@@ -73,14 +73,18 @@ const FilebarListItem = ({ listItem, subtitle, icon }) => {
         <Typography variant="caption" sx={{ whiteSpace: 'normal' }}>
           {"S3 Path: s3/public/" + key}
         </Typography>
-        <Container sx={{height:"10px"}}/>
-        <Button variant="contained" sx={{marginRight: "10px", marginLeft: "10px"}}>
-          Copy S3 URI
-        </Button>
-        <Button variant="contained" sx={{marginRight: "10px"}}>
-          Download
-        </Button>
-        <Container sx={{height:"15px"}}/>
+        <Container sx={{ height: "10px" }} />
+        <Stack spacing={1} alignContent="center" alignItems="center">
+          <Button variant="contained" sx={{ width: "150px" }}>
+            <ContentCopy />
+            Copy S3 URI
+          </Button>
+          <Button variant="contained" sx={{ width: "150px" }}>
+            <Download />
+            Download
+          </Button>
+        </Stack>
+        <Container sx={{ height: "15px" }} />
       </Collapse>
     </>
   );
