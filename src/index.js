@@ -13,10 +13,17 @@ import AWS from "aws-sdk";
 // Configure Amplify in index file or root file
 Amplify.configure({
   Auth: {
+    identityPoolId: window.USER_IDENTITY_POOL_ID,
     region: window.REGION,
     userPoolId: window.USER_POOL_ID,
     userPoolWebClientId: window.USER_POOL_APP_CLIENT_ID,
   },
+  Storage: {
+    AWSS3: {
+      bucket: 'karan-test-public-storage-704448976973',
+      region: 'us-east-1'
+    }
+  }
 });
 
 AWS.config.region = window.REGION; // Region

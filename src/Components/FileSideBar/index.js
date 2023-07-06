@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import clsx from "clsx";
 import EmptyState from "Components/EmptyState";
 import SidebarListItem from "Components/SideBar/SidebarListItem";
+import FilebarListItem from "Components/FileSideBar/FilebarListItem";
 import { DEFAULT_STRINGS, DRAWER_WIDTH } from "utils/constants/common";
 import Proptypes from "prop-types";
 import Book from "@mui/icons-material/Book";
@@ -80,7 +81,7 @@ const FileSideBar = ({ showDrawer = true, items = [] }) => {
           <List>
             {/* Create a FileListItem Component that has File name..? S3 bucket path and button to download and Copy S3 URI path */}
             {items.map((item, index) => (
-              <SidebarListItem
+              <FilebarListItem
                 key={`${item.tableName}-${index}-table-metadata`}
                 listItem={item}
               />
