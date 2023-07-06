@@ -10,6 +10,7 @@ import Configration from "Configration";
 import ErrorBoundary from "Components/ErrorBoundary";
 import { AppContextProvider } from "context/AppContext";
 import { getTablesMetaData } from "utils/vaultdb";
+import { Storage } from 'aws-amplify';
 
 /**
  * Home Component
@@ -20,8 +21,9 @@ import { getTablesMetaData } from "utils/vaultdb";
 const Home = () => {
   // Sidebar State to toggle drawer
   const [showDrawer, setShowDrawer] = useState(true);
-  const [showRightDrawer , setShowRightDrawer] = useState(false);
+  const [showRightDrawer, setShowRightDrawer] = useState(false);
   const [tablesData, setTablesData] = useState({});
+  const [exportedFilesData, setExportedFilesData] = useState([]);
   const { user } = useAuthenticator((context) => [context.user]);
 
   useEffect(() => {
@@ -41,6 +43,16 @@ const Home = () => {
     if (!idToken) console.log("User Does not exists");
     Configration.setUserCredentials(idToken);
     getMetadata();
+
+    // Grab exported files names
+    Storage.list('users/' + user.username + '/exported_files/')
+      .then((result) => {
+        const files = result.results;
+        setExportedFilesData(files.slice(1)); // first file listed is an empty, nameless file.
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, [user]);
 
   const toggleRightDrawerState = useCallback(() => {
@@ -95,7 +107,7 @@ const Home = () => {
           rightSideBar={
             <FileSideBar
               showDrawer={showRightDrawer}
-              items={[]}
+              items={exportedFilesData}
               setShowDrawer={setShowRightDrawer}
             />
           }

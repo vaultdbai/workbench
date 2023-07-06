@@ -82,7 +82,7 @@ const FileSideBar = ({ showDrawer = true, items = [] }) => {
             {/* Create a FileListItem Component that has File name..? S3 bucket path and button to download and Copy S3 URI path */}
             {items.map((item, index) => (
               <FilebarListItem
-                key={`${item.tableName}-${index}-table-metadata`}
+                key={`${item.key}-${index}-table-metadata`}
                 listItem={item}
               />
             ))}
