@@ -20,8 +20,8 @@ Amplify.configure({
   },
   Storage: {
     AWSS3: {
-      bucket: 'karan-test-public-storage-704448976973',
-      region: 'us-east-1'
+      bucket: window.S3_BUCKET_NAME,
+      region: window.REGION
     }
   }
 });

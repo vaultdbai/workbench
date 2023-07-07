@@ -19,6 +19,7 @@ import { DEFAULT_STRINGS } from "utils/constants/common";
 import PropTypes from "prop-types";
 import { Button, Container, Stack } from "@mui/material";
 import { ContentCopy, Download, Margin } from "@mui/icons-material";
+import { Storage } from 'aws-amplify';
 
 const useStyles = makeStyles((theme) => ({
   nested: {
@@ -51,6 +52,12 @@ const FilebarListItem = ({ listItem, subtitle, icon }) => {
   const fileFolders = key.split("/");
   const fileName = fileFolders[fileFolders.length - 1];
 
+  let fileURI = 's3://' + window.S3_BUCKET_NAME + "/public/" + key;
+
+  const copyURI = () => {
+    navigator.clipboard.writeText(fileURI);
+  }
+
   return (
     <>
       <ListItem title={fileName} button component="li" onClick={toggleListItem}>
@@ -75,7 +82,7 @@ const FilebarListItem = ({ listItem, subtitle, icon }) => {
         </Typography>
         <Container sx={{ height: "10px" }} />
         <Stack spacing={1} alignContent="center" alignItems="center">
-          <Button variant="contained" sx={{ width: "150px" }}>
+          <Button onClick={copyURI} variant="contained" sx={{ width: "150px" }}>
             <ContentCopy />
             Copy S3 URI
           </Button>
