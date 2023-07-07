@@ -1,21 +1,14 @@
 import ListItemText from "@mui/material/ListItemText";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import TableChartOutlinedIcon from "@mui/icons-material/TableChartOutlined";
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { useState } from "react";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Collapse from "@mui/material/Collapse";
-import List from "@mui/material/List";
-import ViewColumnIcon from "@mui/icons-material/ViewColumn";
-import ListSubheader from "@mui/material/ListSubheader";
 import makeStyles from "@mui/styles/makeStyles";
-import clsx from "clsx";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import Tooltip from "@mui/material/Tooltip";
-import { DEFAULT_STRINGS } from "utils/constants/common";
 import PropTypes from "prop-types";
 import { Button, Container, Stack } from "@mui/material";
 import { ContentCopy, Download, Margin } from "@mui/icons-material";
@@ -42,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 //  Collapsible ListItem Component for  SideBar
-const FilebarListItem = ({ listItem, subtitle, icon }) => {
+const FilebarListItem = ({ listItem, icon }) => {
   const [isOpen, setIsOpen] = useState(false);
   const classes = useStyles();
   const toggleListItem = () => {
@@ -54,9 +47,26 @@ const FilebarListItem = ({ listItem, subtitle, icon }) => {
 
   let fileURI = 's3://' + window.S3_BUCKET_NAME + "/public/" + key;
 
+  // copies the S3 URI to the clipboard
   const copyURI = () => {
     navigator.clipboard.writeText(fileURI);
+    console.log(lastModified);
   }
+
+  // Downloads the file to the user's browser
+  const handleDownload = async () => {
+    try {
+      const url = await Storage.get(key);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading file:", error);
+    }
+  };
 
   return (
     <>
@@ -86,7 +96,7 @@ const FilebarListItem = ({ listItem, subtitle, icon }) => {
             <ContentCopy />
             Copy S3 URI
           </Button>
-          <Button variant="contained" sx={{ width: "150px" }}>
+          <Button onClick={handleDownload} variant="contained" sx={{ width: "150px" }}>
             <Download />
             Download
           </Button>
@@ -101,6 +111,5 @@ export default FilebarListItem;
 
 FilebarListItem.propTypes = {
   listItem: PropTypes.object.isRequired,
-  subtitle: PropTypes.string,
   icon: PropTypes.element,
 };
