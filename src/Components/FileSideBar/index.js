@@ -5,18 +5,12 @@ import makeStyles from "@mui/styles/makeStyles";
 import Typography from "@mui/material/Typography";
 import clsx from "clsx";
 import EmptyState from "Components/EmptyState";
-import SidebarListItem from "Components/SideBar/SidebarListItem";
 import FilebarListItem from "Components/FileSideBar/FilebarListItem";
 import { DEFAULT_STRINGS, DRAWER_WIDTH } from "utils/constants/common";
 import Proptypes from "prop-types";
-import Book from "@mui/icons-material/Book";
-import { getSyntaxMockData } from "utils/mockData";
 import { useState } from "react";
 import { Button, Collapse, Fab, Stack, TextField } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import AddIcon from '@mui/icons-material/Add';
-import Configuration from "Configration";
-import Scrollbar from 'react-scrollbar';
 
 // SideBar Styles
 const useStyles = makeStyles((theme) => ({
