@@ -33,7 +33,7 @@ const useStyles = makeStyles((theme) => ({
   tableNameText: {
     overflow: 'hidden',
     whiteSpace: 'nowrap',
-    textOverflow: 'elllipsis'
+    textOverflow: 'ellipsis'
   }
 }));
 
