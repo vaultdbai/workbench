@@ -6,13 +6,12 @@ import Typography from "@mui/material/Typography";
 import clsx from "clsx";
 import EmptyState from "Components/EmptyState";
 import SidebarListItem from "Components/SideBar/SidebarListItem";
-import DatabaseSidebarListItem from "Components/SideBar/DatabaseSidebarListItem";
 import { DEFAULT_STRINGS, DRAWER_WIDTH } from "utils/constants/common";
 import Proptypes from "prop-types";
 import Book from "@mui/icons-material/Book";
 import { getSyntaxMockData } from "utils/mockData";
 import { useState } from "react";
-import { Button, Collapse, Fab, Stack, TextField } from "@mui/material";
+import { Button, Collapse, Fab, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from '@mui/icons-material/Add';
 import Configuration from "Configration";
@@ -54,25 +53,19 @@ const SideBar = ({
   const classes = useStyles();
 
 
-  const [selectedItem, setSelectedItem] = useState(null); // the selected catalogue
-  const [isOpen, setIsOpen] = useState(false); // whether or not the Catalogues dropdown is expanded or not
+  const [selectedCatalogue, setSelectedCatalogue] = useState("test"); // the selected catalogue
   const [isTablesOpen, setIsTablesOpen] = useState(true); // whether or not the Tables dropdown is expanded or not
   const [addCatalogueName, setAddCatalogueName] = useState('');
 
   // function that gets called when a database list item is clicked
-  const handleItemClick = (item) => {
-    setSelectedItem(item);
-    Configuration.setCatalog(item);
+  const handleSelectCatalogue = (event) => {
+    setSelectedCatalogue(event.target.value);
+    Configuration.setCatalog(event.target.value);
     changeCatalog()
     console.log("Changed catalog to " + Configuration.getCatalog());
   }
 
-  // gets called when Catalogues button is clicked. Expands or collapses list of catalogues
-  const toggleCatalogueDropdown = () => {
-    setIsOpen((value) => !value);
-  }
-
-  // gets called when Catalogues button is clicked. Expands or collapses list of catalogues
+  // gets called when Tables button is clicked. Expands or collapses list of current catalogue's tables
   const toggleTableDropdown = () => {
     setIsTablesOpen((value) => !value);
   }
@@ -133,32 +126,36 @@ const SideBar = ({
       <Scrollbar style={{ height: "100%" }}>
         {/* Large button labelled Catalogues that opens the list of catalogues */}
         <Stack direction='column' >
-          <Button onClick={toggleCatalogueDropdown} sx={{ width: "100%" }}>
+          <Button sx={{ width: "100%", marginBottom:"10px" }} disableRipple>
             <Box p={1}>
               <Typography variant="h6">Catalogues</Typography>
-              <ExpandMoreIcon />
             </Box>
           </Button>
-          {/* Contains the list of catalogues */}
-          <Collapse in={isOpen} unmountOnExit>
-            {catalogues.length === 0 ? (
-              <EmptyState
-                title={DEFAULT_STRINGS.NO_CATALOGUE_EXIST}
-                titleVariant="h6"
-                subtitle={DEFAULT_STRINGS.CREATE_NEW_CATALOGUE_MESSAGE} />
-            ) : (
-              <List>
+          {/* A drop-down that contains the list of catalogues */}
+          {catalogues.length === 0 ? (
+            <EmptyState
+              title={DEFAULT_STRINGS.NO_CATALOGUE_EXIST}
+              titleVariant="h6"
+              subtitle={DEFAULT_STRINGS.CREATE_NEW_CATALOGUE_MESSAGE} />
+          ) : (
+            <FormControl fullWidth>
+              <InputLabel id="select-catalogue-label">Select Catalogue</InputLabel>
+              <Select
+                labelId="select-catalogue-label"
+                id="select-catalogue"
+                value={selectedCatalogue}
+                label="Select Catalogue"
+                onChange={handleSelectCatalogue}>
                 {catalogues.map((catalogue, index) => (
-                  <DatabaseSidebarListItem
-                    selected={selectedItem === catalogue}
+                  <MenuItem
                     key={`${catalogue}-${index}`}
-                    item={catalogue}
-                    onItemClick={handleItemClick}
-                    databaseName={catalogue} />
+                    value={catalogue}>
+                    {catalogue}
+                  </MenuItem>
                 ))}
-              </List>
-            )}
-          </Collapse>
+              </Select>
+            </FormControl>
+          )}
           {/* The text field where a user can add a new catalogue name along with a button to add it */}
           <Box display="flex" alignItems="center" marginTop={1}>
             <TextField
