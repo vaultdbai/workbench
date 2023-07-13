@@ -21,10 +21,10 @@ Amplify.configure({
   },
   Storage: {
     AWSS3: {
-      bucket: 'karan-test-public-storage-704448976973',
-      region: window.REGION
-    }
-  }
+      bucket: window.USER_BUCKET,
+      region: window.REGION,
+    },
+  },
 });
 
 AWS.config.region = window.REGION; // Region
@@ -40,12 +40,15 @@ root.render(
       <CssBaseline />
       <Router basename="/workbench">
         <Routes>
-          <Route path="/" element={
-            <Authenticator.Provider>
-              <App />
-            </Authenticator.Provider>
-          } />
-            <Route path="profile" element={<ProfilePage />} />
+          <Route
+            path="/"
+            element={
+              <Authenticator.Provider>
+                <App />
+              </Authenticator.Provider>
+            }
+          />
+          <Route path="profile" element={<ProfilePage />} />
         </Routes>
       </Router>
     </ThemeProvider>
