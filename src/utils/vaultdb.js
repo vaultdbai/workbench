@@ -40,4 +40,50 @@ async function getTablesMetaData() {
   }
 }
 
-export { getTablesMetaData };
+/**
+ * Fetches the list of catalogue names
+ * @returns The list if catalogue names in an array
+ */
+async function getCataloguesMetaData() {
+  try {
+
+    const query = "select * from catalogues";
+
+    const result = await invokeLambdaFunction("fetch-catalogues", query);
+
+    // Parse the JSON results and return it so we can output the list of catalogues.
+
+    let catalogueList = [];
+
+    if (result.Payload) {
+      const tableData = JSON.parse(result.Payload);
+      if (tableData.data) {
+        const data = JSON.parse(tableData.data);
+        for (let i in data) {
+          console.log(data[i]['catalogueName']);
+          catalogueList.push(data[i]['catalogueName']);
+        }
+      }
+    }
+
+    return catalogueList;
+  } catch (error) {
+    console.error(error);
+    return null
+  }
+}
+
+async function addCatalogue(catalogueName) {
+  try {
+
+    const query = "INSERT INTO catalogues VALUES ('" + catalogueName + "');" 
+
+    const result = await invokeLambdaFunction("fetch-catalogues", query);
+
+    console.log(result);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export { getTablesMetaData, getCataloguesMetaData, addCatalogue};

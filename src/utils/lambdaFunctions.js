@@ -1,12 +1,13 @@
 import Configration from "Configration";
 import AWS from "aws-sdk";
 
+
 const invokeLambdaFunction = (functionName, query) => {
   const payload = {
     token: Configration.getToken(),
     payload: query,
     catalog: Configration.getCatalog(),
-    database: Configration.getSchema(),
+    database: Configration.getSchema(), 
   };
 
   const lambda = new AWS.Lambda();

@@ -28,6 +28,8 @@ export const DEFAULT_STRINGS = {
   SIGN_IN: "Sign In",
   SIGN_OUT: "Sign Out",
   NO_TABLES_EXIST: "No table exists",
+  NO_CATALOGUE_EXIST: "No catalogue exists",
+  CREATE_NEW_CATALOGUE_MESSAGE: "Add a new catalogue below",
   IMPORT_NEW_DATA_MESSAGE: "Please import data to the Editor",
   QUERY_EDITOR_PLACEHOLDER: "Write Query Here ...",
   IMPORT_DATA_DIALOG_TITLE: "Import Data",
