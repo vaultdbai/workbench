@@ -40,12 +40,15 @@ root.render(
       <CssBaseline />
       <Router basename="/workbench">
         <Routes>
-          <Route path="/" element={
-            <Authenticator.Provider>
-              <App />
-            </Authenticator.Provider>
-          } />
-            <Route path="profile" element={<ProfilePage />} />
+          <Route
+            path="/"
+            element={
+              <Authenticator.Provider>
+                <App />
+              </Authenticator.Provider>
+            }
+          />
+          <Route path="profile" element={<ProfilePage />} />
         </Routes>
       </Router>
     </ThemeProvider>
