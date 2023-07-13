@@ -46,7 +46,7 @@ const ImportFormDialog = (props) => {
         const fileContent = e.target.result;
 
         if (file.name.endsWith(".sql")) {
-          const result = await invokeLambdaFunction("execute-query", fileContent);
+          const result = await invokeLambdaFunction("execute-query", fileContent, "query");
 
           console.log(result)
 
@@ -126,7 +126,7 @@ const ImportFormDialog = (props) => {
           createTableSQL = createTableSQL.substring(0, createTableSQL.length - 1)
           createTableSQL += ");"
 
-          const result = await invokeLambdaFunction("execute-query", createTableSQL + insertValuesSQL);
+          const result = await invokeLambdaFunction("execute-query", createTableSQL + insertValuesSQL, "query");
 
           console.log(result)
 

@@ -104,9 +104,6 @@ const SideBar = ({
   } else if (addCatalogueName.length > 50) {
     catalogNameHelperText = "Catalogue name is too long!";
     catalogeNameError = true;
-  } else if (addCatalogueName === "table") {
-    catalogNameHelperText = "Catalogue name cannot be that"
-    catalogeNameError = true;
   } else {
     catalogNameHelperText = "";
     catalogeNameError = false;

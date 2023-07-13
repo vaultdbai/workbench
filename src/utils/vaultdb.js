@@ -1,4 +1,5 @@
 import { invokeLambdaFunction } from "utils/lambdaFunctions";
+import Configuration from "Configration";
 
 async function getTablesMetaData() {
   try {
@@ -6,7 +7,7 @@ async function getTablesMetaData() {
     const query =
       "select t.table_name, c.column_name from information_schema.tables t, information_schema.columns c where t.table_name=c.table_name";
 
-    const result = await invokeLambdaFunction("execute-query", query);
+    const result = await invokeLambdaFunction("execute-query", query, "query");
     console.log(result);
     const tableresult = {};
     if (result.Payload) {
@@ -47,9 +48,9 @@ async function getTablesMetaData() {
 async function getCataloguesMetaData() {
   try {
 
-    const query = "select * from catalogues";
+    const query = "";
 
-    const result = await invokeLambdaFunction("fetch-catalogues", query);
+    const result = await invokeLambdaFunction("execute-query", query, "get-catalogues");
 
     // Parse the JSON results and return it so we can output the list of catalogues.
 
@@ -57,12 +58,9 @@ async function getCataloguesMetaData() {
 
     if (result.Payload) {
       const tableData = JSON.parse(result.Payload);
-      if (tableData.data) {
-        const data = JSON.parse(tableData.data);
-        for (let i in data) {
-          console.log(data[i]['catalogueName']);
-          catalogueList.push(data[i]['catalogueName']);
-        }
+      for (let fileNumber in tableData) {
+        const fileName = tableData[fileNumber]
+        catalogueList.push(fileName.split(".")[0])
       }
     }
 
@@ -76,9 +74,11 @@ async function getCataloguesMetaData() {
 async function addCatalogue(catalogueName) {
   try {
 
-    const query = "INSERT INTO catalogues VALUES ('" + catalogueName + "');" 
+    const query = "";
 
-    const result = await invokeLambdaFunction("fetch-catalogues", query);
+    Configuration.setCatalog(catalogueName);
+
+    const result = await invokeLambdaFunction("execute-query", query, "query");
 
     console.log(result);
   } catch (error) {
