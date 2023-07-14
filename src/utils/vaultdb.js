@@ -1,3 +1,4 @@
+import { Storage } from "aws-amplify";
 import { invokeLambdaFunction } from "utils/lambdaFunctions";
 
 async function getTablesMetaData() {
@@ -6,7 +7,7 @@ async function getTablesMetaData() {
     const query =
       "select t.table_name, c.column_name from information_schema.tables t, information_schema.columns c where t.table_name=c.table_name";
 
-    const result = await invokeLambdaFunction("execute-query", query);
+    const result = await invokeLambdaFunction("execute-query", query, "query");
     console.log(result);
     const tableresult = {};
     if (result.Payload) {
@@ -40,7 +41,7 @@ async function getTablesMetaData() {
   }
 }
 
-async function exportQueryResults(queryToExport, typeOfFile) {
+async function exportQueryResults(queryToExport, typeOfFile, username) {
 
   const fileConverter = {
     "CSV File": ".csv",
@@ -85,7 +86,7 @@ async function exportQueryResults(queryToExport, typeOfFile) {
     console.log(modifiedQueryToExport);
 
     // Now execute the COPY query to create an output file
-    const result = await invokeLambdaFunction("execute-query", modifiedQueryToExport);
+    const result = await invokeLambdaFunction("execute-query", modifiedQueryToExport, "query");
     console.log(result);
 
     // Then extract the copy query from the file. Make sure to add the file type as a parameter.
@@ -102,6 +103,10 @@ async function exportQueryResults(queryToExport, typeOfFile) {
 
       const fileName = "output" + fileSuffix;
       downloadFile(fileName,fileContent);
+
+      const uploadedFileName = createUniqueFileName(fileSuffix);
+
+      await Storage.put("users/" + username + "/exported_files/" + uploadedFileName, fileContent);
     }  
     
   } catch (error) {
@@ -124,6 +129,23 @@ function downloadFile(fileName, fileContent) {
 
   // Clean up the URL object after the download starts
   URL.revokeObjectURL(link.href);
+}
+
+function createUniqueFileName(fileSuffix) {
+  const date = new Date();
+  let strToReturn = "";
+
+  console.log(date.getMonth());
+
+  strToReturn += date.getFullYear() + "_"
+  strToReturn += (date.getMonth() + 1) + "_" // first month is 0
+  strToReturn += date.getDate() + "_"
+  strToReturn += date.getHours()
+  strToReturn += date.getMinutes()
+  strToReturn += date.getSeconds()
+  strToReturn += date.getMilliseconds();
+  
+  return strToReturn + fileSuffix;
 }
 
 export { getTablesMetaData, exportQueryResults };

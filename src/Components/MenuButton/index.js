@@ -8,15 +8,18 @@ import Button from "@mui/material/Button";
 import { noop } from "utils/constants/common";
 import PropTypes from "prop-types";
 import { exportQueryResults } from "utils/vaultdb";
+import { useAuthenticator } from "@aws-amplify/ui-react";
 
-const MenuButton = ({ 
-  title = "", 
-  menuItems = [], 
-  onMenuItemClick = noop, 
-  disabled = true, 
+const MenuButton = ({
+  title = "",
+  menuItems = [],
+  onMenuItemClick = noop,
+  disabled = true,
   activeQuery = ''
 }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const { user } = useAuthenticator((context) => [context.user]);
 
   const classes = useMenuStyles();
 
@@ -31,7 +34,7 @@ const MenuButton = ({
   const handleMenuItemClick = (item) => {
     onMenuItemClick(item);
     console.log(item);
-    exportQueryResults(activeQuery,item);
+    exportQueryResults(activeQuery, item, user.username);
     handleClose();
   };
 
