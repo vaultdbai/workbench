@@ -84,6 +84,7 @@ const Home = () => {
   const handleImportDialogSuccess = () => {
     console.log("Success on Import dialog")
     setShowImportDialog(false);
+    getDatabaseTables();
   };
 
   // creates list of sidebars items to be shown

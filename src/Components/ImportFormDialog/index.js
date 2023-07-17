@@ -132,6 +132,21 @@ const ImportFormDialog = (props) => {
 
         } else if (file.name.endsWith(".csv")) {
           console.log("You uploaded a CSV file.");
+
+          let payload = {};
+
+          const query = "CREATE TABLE " + tableName + " AS SELECT * FROM read_csv_auto('/mnt/commitlog/input.csv')";
+          const fileType = ".csv";
+          
+          payload["query"] = query;
+          payload["fileContent"] = fileContent;
+          payload["fileType"] = fileType;
+
+          const result = await invokeLambdaFunction("execute-query", payload, "import-file");
+
+          console.log(result);
+          
+
         } else if (file.name.endsWith(".xml")) {
           console.log("You uploaded an XML document");
         } else {

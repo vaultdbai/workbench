@@ -21,7 +21,7 @@ Amplify.configure({
   },
   Storage: {
     AWSS3: {
-      bucket: window.S3_BUCKET_NAME,
+      bucket: window.USER_BUCKET,
       region: window.REGION
     }
   }
