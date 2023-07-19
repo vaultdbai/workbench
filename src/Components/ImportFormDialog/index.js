@@ -52,83 +52,19 @@ const ImportFormDialog = (props) => {
 
         }
         else if (file.name.endsWith(".json")) {
-          console.log("You uploaded a JSON file");
 
-          // first convert the text into a JavaScript Object
-          const data = JSON.parse(fileContent);
+          let payload = {};
 
-          // next create the two SQL statements, one to create the table, the other to insert the data.
-          // We will go through all the data once
-          let headers = [];
-          let headerDataType = [];
+          const query = "CREATE TABLE " + tableName + " AS SELECT * FROM read_json_auto('/mnt/commitlog/input.json')";
+          const fileType = ".json";
 
-          let insertValuesSQL = 'INSERT INTO ' + tableName + ' VALUES ';
-          let headerInputMode = true; // whether or not we are iterating the first row which is the header row.
-          for (let row in data) {
-            let i = 0;
-            if (!headerInputMode) {
-              insertValuesSQL += "( "
-            }
-            for (let col in data[row]) {
-              if (headerInputMode) {
-                headers.push(data[row][col])
-              }
-              else {
+          payload["query"] = query;
+          payload["fileContent"] = fileContent;
+          payload["fileType"] = fileType;
 
-                // figure out the data types for the CREATE TABLE query and add the values into the 
-                // INSERT VALUES query
-                const dataType = typeof data[row][col];
-                if (dataType === "number") {
-                  if (Number.isInteger(data[row][col])) {
-                    headerDataType[i] = "int"
-                  } else {
-                    headerDataType[i] = "decimal(30,10)"
-                  }
-                  insertValuesSQL += data[row][col] + ","
-                } else if (dataType === "string") {
-                  headerDataType[i] = "varchar"
-                  insertValuesSQL += "'" + data[row][col] + "',"
-                } else {
-                  insertValuesSQL += "NULL,"
-                  if (!headerDataType[i]) {
-                    headerDataType[i] = "varchar"
-                  }
-                  console.log("Null value inserted")
-                }
-              }
-              i++
-            }
+          const result = await invokeLambdaFunction("execute-query", payload, "import-file");
 
-            // since it is the end of the row, we instead replace the ending
-            // of the query with a ), instead of a ,
-            if (!headerInputMode) {
-
-              insertValuesSQL = insertValuesSQL.substring(0, insertValuesSQL.length - 1)
-              insertValuesSQL += "),"
-            }
-
-
-            // now we are onto the data rows so we are not detecting any more headers.
-            headerInputMode = false
-          }
-
-          // at the end, replace the ending comma with a semicolon
-          insertValuesSQL = insertValuesSQL.substring(0, insertValuesSQL.length - 1)
-          insertValuesSQL += ";";
-
-          // now create the CREATE TABLE sql statement
-          let createTableSQL = "CREATE TABLE " + tableName + "(";
-          for (let i = 0; i < headers.length; i++) {
-            createTableSQL += headers[i] + " " + headerDataType[i] + ",";
-          }
-
-          // remove the ending comma and add ");"
-          createTableSQL = createTableSQL.substring(0, createTableSQL.length - 1)
-          createTableSQL += ");"
-
-          const result = await invokeLambdaFunction("execute-query", createTableSQL + insertValuesSQL, "query");
-
-          console.log(result)
+          console.log(result);
 
         } else if (file.name.endsWith(".csv")) {
           console.log("You uploaded a CSV file.");
@@ -145,7 +81,6 @@ const ImportFormDialog = (props) => {
           const result = await invokeLambdaFunction("execute-query", payload, "import-file");
 
           console.log(result);
-          
 
         } else if (file.name.endsWith(".xml")) {
           console.log("You uploaded an XML document");
@@ -158,7 +93,7 @@ const ImportFormDialog = (props) => {
 
       setFile(null);
       setTableName('');
-      handleSuccessAction()
+      handleSuccessAction();
     }
   }
 
