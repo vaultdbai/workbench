@@ -13,12 +13,36 @@ import { DEFAULT_STRINGS } from "utils/constants/common";
 import { useState } from "react";
 import { invokeLambdaFunction } from "utils/lambdaFunctions";
 import { TextField } from "@mui/material";
+import { Auth } from 'aws-amplify';
+import { Storage } from 'aws-amplify';
 
 const useStyles = makeStyles({
   input: {
     display: "none",
   },
 });
+
+/**
+ * Create a unique file name to be uploaded to the S3 bucket based on a JS Date object.
+ * @param {the type of file. The ending of the file's name} fileSuffix 
+ * @returns a unique file name containing the current date in year_month_day_hoursMinutesSecondsMilliseconds.fileSuffix
+ */
+function createUniqueFileName(fileSuffix) {
+  const date = new Date();
+  let strToReturn = "";
+
+  console.log(date.getMonth());
+
+  strToReturn += date.getFullYear() + "_"
+  strToReturn += (date.getMonth() + 1) + "_" // first month is 0
+  strToReturn += date.getDate() + "_"
+  strToReturn += date.getHours()
+  strToReturn += date.getMinutes()
+  strToReturn += date.getSeconds()
+  strToReturn += date.getMilliseconds();
+
+  return strToReturn + fileSuffix;
+}
 
 const ImportFormDialog = (props) => {
 
@@ -37,9 +61,25 @@ const ImportFormDialog = (props) => {
     handleCancelAction()
   }
 
-  const successfullyCloseDialog = () => {
+  const successfullyCloseDialog = async () => {
     // simply read the file's content
     if (file) {
+      
+      // First upload the file into the S3 bucket.
+
+      const user = await Auth.currentAuthenticatedUser();
+      const fileDotSplit = file.name.split(".");
+      const fileSuffix = "." + fileDotSplit[fileDotSplit.length - 1];
+
+      const uploadedFileName = createUniqueFileName(fileSuffix);
+      try {
+        await Storage.put("users/" + user.username + '/imported_files/' + uploadedFileName, file, {
+        });
+
+      } catch (error) {
+        console.log('Error uploading input file:', error);
+      }
+
       const reader = new FileReader();
 
       reader.onload = async (e) => {
@@ -61,6 +101,8 @@ const ImportFormDialog = (props) => {
           payload["query"] = query;
           payload["fileContent"] = fileContent;
           payload["fileType"] = fileType;
+          payload["userName"] = user.username;
+          payload["fileName"] = uploadedFileName;
 
           const result = await invokeLambdaFunction("execute-query", payload, "import-file");
 
@@ -77,13 +119,32 @@ const ImportFormDialog = (props) => {
           payload["query"] = query;
           payload["fileContent"] = fileContent;
           payload["fileType"] = fileType;
+          payload["userName"] = user.username;
+          payload["fileName"] = uploadedFileName;
 
           const result = await invokeLambdaFunction("execute-query", payload, "import-file");
 
           console.log(result);
 
-        } else if (file.name.endsWith(".xml")) {
-          console.log("You uploaded an XML document");
+        } else if (file.name.endsWith(".parquet")) {
+          
+          let payload = {};
+
+          const query = "CREATE TABLE " + tableName + " AS SELECT * FROM read_parquet('/mnt/commitlog/input.parquet')";
+          const fileType = ".parquet";
+          
+          payload["query"] = query;
+          payload["fileContent"] = fileContent;
+          payload["fileType"] = fileType;
+          payload["userName"] = user.username;
+          payload["fileName"] = uploadedFileName;
+
+          console.log(fileContent);
+
+          const result = await invokeLambdaFunction("execute-query", payload, "import-file");
+
+          console.log(result);
+
         } else {
           console.log("You uploaded a file that we don't comply with...")
         }
@@ -146,7 +207,7 @@ const ImportFormDialog = (props) => {
           {(file === null || file === undefined) ? <Typography> Select File </Typography> : <Typography>{file.name}</Typography>}
           <label htmlFor="file-upload">
             <input
-              accept=".csv, .sql, .json, .xml"
+              accept=".csv, .sql, .json, .parquet"
               className={classes.input}
               id="file-upload"
               type="file"
