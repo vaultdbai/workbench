@@ -99,7 +99,6 @@ const ImportFormDialog = (props) => {
           const fileType = ".json";
 
           payload["query"] = query;
-          payload["fileContent"] = fileContent;
           payload["fileType"] = fileType;
           payload["userName"] = user.username;
           payload["fileName"] = uploadedFileName;
@@ -117,7 +116,6 @@ const ImportFormDialog = (props) => {
           const fileType = ".csv";
           
           payload["query"] = query;
-          payload["fileContent"] = fileContent;
           payload["fileType"] = fileType;
           payload["userName"] = user.username;
           payload["fileName"] = uploadedFileName;
@@ -134,12 +132,27 @@ const ImportFormDialog = (props) => {
           const fileType = ".parquet";
           
           payload["query"] = query;
-          payload["fileContent"] = fileContent;
           payload["fileType"] = fileType;
           payload["userName"] = user.username;
           payload["fileName"] = uploadedFileName;
 
-          console.log(fileContent);
+          const result = await invokeLambdaFunction("execute-query", payload, "import-file");
+
+          console.log(result);
+
+        } else if (file.name.endsWith(".xlsx")) {
+
+          let payload = {};
+
+          const query = "install spatial;\n" 
+                + "load spatial;\n" 
+                + "CREATE TABLE " + tableName + " AS SELECT * FROM st_read('/mnt/commitlog/input.xlsx', layer='Sheet1')";
+          const fileType = ".parquet";
+          
+          payload["query"] = query;
+          payload["fileType"] = fileType;
+          payload["userName"] = user.username;
+          payload["fileName"] = uploadedFileName;
 
           const result = await invokeLambdaFunction("execute-query", payload, "import-file");
 
@@ -187,7 +200,7 @@ const ImportFormDialog = (props) => {
       onClose={closeDialog}
       aria-labelledby="import-data-form-dialog-title"
     >
-      {/* Title Section */}
+      {/* Title Section causes h6 cannot appear as child of h2 warning*/}
       <DialogTitle
         id="import-data-form-dialog-title"
         onClose={closeDialog}
@@ -197,7 +210,7 @@ const ImportFormDialog = (props) => {
 
       {/* Dialog Content Area */}
       <DialogContent dividers>
-        <Typography>{DEFAULT_STRINGS.IMPORT_DATA_HELP_TEXT}</Typography>
+      <Typography>{DEFAULT_STRINGS.IMPORT_DATA_HELP_TEXT}</Typography>
         <Box
           display="flex"
           my={3}
