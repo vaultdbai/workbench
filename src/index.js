@@ -22,9 +22,9 @@ Amplify.configure({
   Storage: {
     AWSS3: {
       bucket: window.USER_BUCKET,
-      region: window.REGION,
-    },
-  },
+      region: window.REGION
+    }
+  }
 });
 
 AWS.config.region = window.REGION; // Region

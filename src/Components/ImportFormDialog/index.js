@@ -13,12 +13,36 @@ import { DEFAULT_STRINGS } from "utils/constants/common";
 import { useState } from "react";
 import { invokeLambdaFunction } from "utils/lambdaFunctions";
 import { TextField } from "@mui/material";
+import { Auth } from 'aws-amplify';
+import { Storage } from 'aws-amplify';
 
 const useStyles = makeStyles({
   input: {
     display: "none",
   },
 });
+
+/**
+ * Create a unique file name to be uploaded to the S3 bucket based on a JS Date object.
+ * @param {the type of file. The ending of the file's name} fileSuffix 
+ * @returns a unique file name containing the current date in year_month_day_hoursMinutesSecondsMilliseconds.fileSuffix
+ */
+function createUniqueFileName(fileSuffix) {
+  const date = new Date();
+  let strToReturn = "";
+
+  console.log(date.getMonth());
+
+  strToReturn += date.getFullYear() + "_"
+  strToReturn += (date.getMonth() + 1) + "_" // first month is 0
+  strToReturn += date.getDate() + "_"
+  strToReturn += date.getHours()
+  strToReturn += date.getMinutes()
+  strToReturn += date.getSeconds()
+  strToReturn += date.getMilliseconds();
+
+  return strToReturn + fileSuffix;
+}
 
 const ImportFormDialog = (props) => {
 
@@ -37,103 +61,103 @@ const ImportFormDialog = (props) => {
     handleCancelAction()
   }
 
-  const successfullyCloseDialog = () => {
+  const successfullyCloseDialog = async () => {
     // simply read the file's content
     if (file) {
+      
+      // First upload the file into the S3 bucket.
+
+      const user = await Auth.currentAuthenticatedUser();
+      const fileDotSplit = file.name.split(".");
+      const fileSuffix = "." + fileDotSplit[fileDotSplit.length - 1];
+
+      const uploadedFileName = createUniqueFileName(fileSuffix);
+      try {
+        await Storage.put("users/" + user.username + '/imported_files/' + uploadedFileName, file, {
+        });
+
+      } catch (error) {
+        console.log('Error uploading input file:', error);
+      }
+
       const reader = new FileReader();
 
       reader.onload = async (e) => {
         const fileContent = e.target.result;
 
         if (file.name.endsWith(".sql")) {
-          const result = await invokeLambdaFunction("execute-query", fileContent);
+          const result = await invokeLambdaFunction("execute-query", fileContent, "query");
 
           console.log(result)
 
         }
         else if (file.name.endsWith(".json")) {
-          console.log("You uploaded a JSON file");
 
-          // first convert the text into a JavaScript Object
-          const data = JSON.parse(fileContent);
+          let payload = {};
 
-          // next create the two SQL statements, one to create the table, the other to insert the data.
-          // We will go through all the data once
-          let headers = [];
-          let headerDataType = [];
+          const query = "CREATE TABLE " + tableName + " AS SELECT * FROM read_json_auto('/mnt/commitlog/input.json')";
+          const fileType = ".json";
 
-          let insertValuesSQL = 'INSERT INTO ' + tableName + ' VALUES ';
-          let headerInputMode = true; // whether or not we are iterating the first row which is the header row.
-          for (let row in data) {
-            let i = 0;
-            if (!headerInputMode) {
-              insertValuesSQL += "( "
-            }
-            for (let col in data[row]) {
-              if (headerInputMode) {
-                headers.push(data[row][col])
-              }
-              else {
+          payload["query"] = query;
+          payload["fileType"] = fileType;
+          payload["userName"] = user.username;
+          payload["fileName"] = uploadedFileName;
 
-                // figure out the data types for the CREATE TABLE query and add the values into the 
-                // INSERT VALUES query
-                const dataType = typeof data[row][col];
-                if (dataType === "number") {
-                  if (Number.isInteger(data[row][col])) {
-                    headerDataType[i] = "int"
-                  } else {
-                    headerDataType[i] = "decimal(30,10)"
-                  }
-                  insertValuesSQL += data[row][col] + ","
-                } else if (dataType === "string") {
-                  headerDataType[i] = "varchar"
-                  insertValuesSQL += "'" + data[row][col] + "',"
-                } else {
-                  insertValuesSQL += "NULL,"
-                  if (!headerDataType[i]) {
-                    headerDataType[i] = "varchar"
-                  }
-                  console.log("Null value inserted")
-                }
-              }
-              i++
-            }
+          const result = await invokeLambdaFunction("execute-query", payload, "import-file");
 
-            // since it is the end of the row, we instead replace the ending
-            // of the query with a ), instead of a ,
-            if (!headerInputMode) {
-
-              insertValuesSQL = insertValuesSQL.substring(0, insertValuesSQL.length - 1)
-              insertValuesSQL += "),"
-            }
-
-
-            // now we are onto the data rows so we are not detecting any more headers.
-            headerInputMode = false
-          }
-
-          // at the end, replace the ending comma with a semicolon
-          insertValuesSQL = insertValuesSQL.substring(0, insertValuesSQL.length - 1)
-          insertValuesSQL += ";";
-
-          // now create the CREATE TABLE sql statement
-          let createTableSQL = "CREATE TABLE " + tableName + "(";
-          for (let i = 0; i < headers.length; i++) {
-            createTableSQL += headers[i] + " " + headerDataType[i] + ",";
-          }
-
-          // remove the ending comma and add ");"
-          createTableSQL = createTableSQL.substring(0, createTableSQL.length - 1)
-          createTableSQL += ");"
-
-          const result = await invokeLambdaFunction("execute-query", createTableSQL + insertValuesSQL);
-
-          console.log(result)
+          console.log(result);
 
         } else if (file.name.endsWith(".csv")) {
           console.log("You uploaded a CSV file.");
-        } else if (file.name.endsWith(".xml")) {
-          console.log("You uploaded an XML document");
+
+          let payload = {};
+
+          const query = "CREATE TABLE " + tableName + " AS SELECT * FROM read_csv_auto('/mnt/commitlog/input.csv')";
+          const fileType = ".csv";
+          
+          payload["query"] = query;
+          payload["fileType"] = fileType;
+          payload["userName"] = user.username;
+          payload["fileName"] = uploadedFileName;
+
+          const result = await invokeLambdaFunction("execute-query", payload, "import-file");
+
+          console.log(result);
+
+        } else if (file.name.endsWith(".parquet")) {
+          
+          let payload = {};
+
+          const query = "CREATE TABLE " + tableName + " AS SELECT * FROM read_parquet('/mnt/commitlog/input.parquet')";
+          const fileType = ".parquet";
+          
+          payload["query"] = query;
+          payload["fileType"] = fileType;
+          payload["userName"] = user.username;
+          payload["fileName"] = uploadedFileName;
+
+          const result = await invokeLambdaFunction("execute-query", payload, "import-file");
+
+          console.log(result);
+
+        } else if (file.name.endsWith(".xlsx")) {
+
+          let payload = {};
+
+          const query = "install spatial;\n" 
+                + "load spatial;\n" 
+                + "CREATE TABLE " + tableName + " AS SELECT * FROM st_read('/mnt/commitlog/input.xlsx', layer='Sheet1')";
+          const fileType = ".parquet";
+          
+          payload["query"] = query;
+          payload["fileType"] = fileType;
+          payload["userName"] = user.username;
+          payload["fileName"] = uploadedFileName;
+
+          const result = await invokeLambdaFunction("execute-query", payload, "import-file");
+
+          console.log(result);
+
         } else {
           console.log("You uploaded a file that we don't comply with...")
         }
@@ -143,7 +167,7 @@ const ImportFormDialog = (props) => {
 
       setFile(null);
       setTableName('');
-      handleSuccessAction()
+      handleSuccessAction();
     }
   }
 
@@ -176,7 +200,7 @@ const ImportFormDialog = (props) => {
       onClose={closeDialog}
       aria-labelledby="import-data-form-dialog-title"
     >
-      {/* Title Section */}
+      {/* Title Section causes h6 cannot appear as child of h2 warning*/}
       <DialogTitle
         id="import-data-form-dialog-title"
         onClose={closeDialog}
@@ -186,7 +210,7 @@ const ImportFormDialog = (props) => {
 
       {/* Dialog Content Area */}
       <DialogContent dividers>
-        <Typography>{DEFAULT_STRINGS.IMPORT_DATA_HELP_TEXT}</Typography>
+      <Typography>{DEFAULT_STRINGS.IMPORT_DATA_HELP_TEXT}</Typography>
         <Box
           display="flex"
           my={3}
@@ -196,7 +220,7 @@ const ImportFormDialog = (props) => {
           {(file === null || file === undefined) ? <Typography> Select File </Typography> : <Typography>{file.name}</Typography>}
           <label htmlFor="file-upload">
             <input
-              accept=".csv, .sql, .json, .xml"
+              accept=".csv, .sql, .json, .parquet"
               className={classes.input}
               id="file-upload"
               type="file"
