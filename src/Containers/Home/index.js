@@ -9,8 +9,8 @@ import { useAuthenticator } from "@aws-amplify/ui-react";
 import Configration from "Configration";
 import ErrorBoundary from "Components/ErrorBoundary";
 import { AppContextProvider } from "context/AppContext";
-import { getTablesMetaData } from "utils/vaultdb";
 import { Storage } from 'aws-amplify';
+import { getTablesMetaData, getCataloguesMetaData, addCatalogue } from "utils/vaultdb";
 
 /**
  * Home Component
@@ -24,24 +24,40 @@ const Home = () => {
   const [showRightDrawer, setShowRightDrawer] = useState(false);
   const [tablesData, setTablesData] = useState({});
   const [exportedFilesData, setExportedFilesData] = useState([]);
+  const [catalogueData, setCatalogData] = useState([]);
+
   const { user } = useAuthenticator((context) => [context.user]);
 
+  // Called when a user switches from one catalogue to another
+  const getDatabaseTables = async () => {
+    const tableData = await getTablesMetaData()
+    setTablesData(tableData);
+  }
+
+  const addAndFetchCatalogues = async (catalogue) => {
+    const result = setCatalogData(await addCatalogue(catalogue));
+    console.log(result);
+
+    const tableData = await getCataloguesMetaData();
+    setCatalogData(tableData);
+  }
+
+  // When the sidebar initially loads, get the test catalogue's tables
+  // along with the user's catalogues.
   useEffect(() => {
     async function getMetadata() {
       setTablesData(await getTablesMetaData());
     }
-    // Configure application
-    Configration.configure(
-      window.APPLICATION_NAME,
-      window.REGION,
-      window.USER_POOL_ID,
-      window.USER_POOL_APP_CLIENT_ID,
-      window.USER_IDENTITY_POOL_ID
-    );
+
+    async function getCatalogues() {
+      setCatalogData(await getCataloguesMetaData());
+    }
+
     console.log(user);
     const idToken = user?.signInUserSession?.idToken;
     if (!idToken) console.log("User Does not exists");
     Configration.setUserCredentials(idToken);
+    getCatalogues();
     getMetadata();
 
     // Grab exported files names
@@ -66,12 +82,18 @@ const Home = () => {
   // State to toggle Import Data Dialog
   const [showImportDialog, setShowImportDialog] = useState(false);
 
-  const toggleImportDialogState = () => {
-    setShowImportDialog((val) => !val);
+  const closeImportDialog = () => {
+    setShowImportDialog(false);
   };
 
+  const openImportDialog = () => {
+    setShowImportDialog(true);
+  }
+
   const handleImportDialogSuccess = () => {
-    setShowImportDialog((val) => !val);
+    console.log("Success on Import dialog")
+    setShowImportDialog(false);
+    //getDatabaseTables();
   };
 
   // creates list of sidebars items to be shown
@@ -92,15 +114,18 @@ const Home = () => {
             <Navbar
               onMenuButtonClick={toggleDrawerState}
               onFileButtonClick={toggleRightDrawerState}
-              onImportButtonClick={toggleImportDialogState}
+              onImportButtonClick={openImportDialog}
               showDrawer={showDrawer}
               showRightDrawer={showRightDrawer}
             />
           }
           sideBar={
             <SideBar
+              changeCatalog={getDatabaseTables}
+              addAndFetchCat={addAndFetchCatalogues}
               showDrawer={showDrawer}
               items={sideBarItems}
+              catalogues={catalogueData}
               setShowDrawer={setShowDrawer}
             />
           }
@@ -118,7 +143,7 @@ const Home = () => {
           <Vaultdb />
           <ImportFormDialog
             showDialog={showImportDialog}
-            handleCancelAction={toggleImportDialogState}
+            handleCancelAction={closeImportDialog}
             handleSuccessAction={handleImportDialogSuccess}
           />
         </HomePageLayout>

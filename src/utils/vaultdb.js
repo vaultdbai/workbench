@@ -1,5 +1,6 @@
 import { Storage } from "aws-amplify";
 import { invokeLambdaFunction } from "utils/lambdaFunctions";
+import Configuration from "Configration";
 
 async function getTablesMetaData() {
   try {
@@ -8,7 +9,7 @@ async function getTablesMetaData() {
       "select t.table_name, c.column_name from information_schema.tables t, information_schema.columns c where t.table_name=c.table_name";
 
     const result = await invokeLambdaFunction("execute-query", query, "query");
-    console.log(result);
+    console.log("execute-query:", result);
     const tableresult = {};
     if (result.Payload) {
       const tabledata = JSON.parse(result.Payload);
@@ -73,14 +74,14 @@ async function exportQueryResults(queryToExport, typeOfFile, username) {
       modifiedQueryToExport = "COPY (" + lastQuery + ") TO '/mnt/commitlog/output.csv' (HEADER, DELIMITER ',');";
     } else if (fileSuffix === ".json") {
       modifiedQueryToExport = "install json;\n"
-                            + "load json;\n"
-                            + "COPY (" + lastQuery + ") TO '/mnt/commitlog/output.json';";
+        + "load json;\n"
+        + "COPY (" + lastQuery + ") TO '/mnt/commitlog/output.json';";
     } else if (fileSuffix === ".parquet") {
       modifiedQueryToExport = "COPY (" + lastQuery + ") TO '/mnt/commitlog/output.parquet' (FORMAT PARQUET);";
     } else if (fileSuffix === ".xlsx") {
-      modifiedQueryToExport = "install spatial;\n" 
-                            + "load spatial;\n"
-                            + "COPY (" + lastQuery + ") TO '/mnt/commitlog/output.xlsx' WITH (FORMAT GDAL, DRIVER 'xlsx');";
+      modifiedQueryToExport = "install spatial;\n"
+        + "load spatial;\n"
+        + "COPY (" + lastQuery + ") TO '/mnt/commitlog/output.xlsx' WITH (FORMAT GDAL, DRIVER 'xlsx');";
     }
 
     console.log(modifiedQueryToExport);
@@ -91,7 +92,7 @@ async function exportQueryResults(queryToExport, typeOfFile, username) {
 
     // Then extract the copy query from the file. Make sure to add the file type as a parameter.
     // TODO: Handle errors where the file could not be retrieved in AWS Lambda function
-    const result2 = await invokeLambdaFunction("export-query",fileSuffix);
+    const result2 = await invokeLambdaFunction("export-query", fileSuffix);
     console.log(result2);
 
     if (result2.Payload) {
@@ -102,13 +103,13 @@ async function exportQueryResults(queryToExport, typeOfFile, username) {
       console.log(fileContent);
 
       const fileName = "output" + fileSuffix;
-      downloadFile(fileName,fileContent);
+      downloadFile(fileName, fileContent);
 
       const uploadedFileName = createUniqueFileName(fileSuffix);
 
       await Storage.put("users/" + username + "/exported_files/" + uploadedFileName, fileContent);
-    }  
-    
+    }
+
   } catch (error) {
     console.error(error);
     return null;
@@ -144,8 +145,54 @@ function createUniqueFileName(fileSuffix) {
   strToReturn += date.getMinutes()
   strToReturn += date.getSeconds()
   strToReturn += date.getMilliseconds();
-  
+
   return strToReturn + fileSuffix;
 }
 
-export { getTablesMetaData, exportQueryResults };
+/**
+ * Fetches the list of catalogue names
+ * @returns The list if catalogue names in an array
+ */
+async function getCataloguesMetaData() {
+  try {
+
+    const query = "Get Catalog";
+
+    const result = await invokeLambdaFunction("execute-query", query, "fetch-catalogues");
+
+    // Parse the JSON results and return it so we can output the list of catalogues.
+
+    let catalogueList = [];
+
+    if (result.Payload) {
+      const tableData = JSON.parse(result.Payload);
+      for (let fileNumber in tableData.data) {
+        const filePath = tableData.data[fileNumber]
+        const fileName = filePath.split("/").pop();
+        catalogueList.push(fileName.split(".")[0])
+      }
+    }
+
+    return catalogueList;
+  } catch (error) {
+    console.error(error);
+    return null
+  }
+}
+
+async function addCatalogue(catalogueName) {
+  try {
+
+    const query = "";
+
+    Configuration.setCatalog(catalogueName);
+
+    const result = await invokeLambdaFunction("execute-query", query, "query");
+
+    console.log(result);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+export { getTablesMetaData, exportQueryResults, getCataloguesMetaData, addCatalogue };

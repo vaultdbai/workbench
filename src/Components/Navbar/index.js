@@ -1,4 +1,5 @@
 import * as React from "react";
+import {Link} from "react-router-dom";
 import Toolbar from "@mui/material/Toolbar";
 import MuiAppBar from "@mui/material/AppBar";
 import { styled } from "@mui/material/styles";
@@ -17,6 +18,8 @@ import PublishIcon from "@mui/icons-material/Publish";
 import { DEFAULT_STRINGS, noop, DRAWER_WIDTH } from "utils/constants/common";
 import PropTypes from "prop-types";
 import { Authenticator } from "@aws-amplify/ui-react";
+import { Auth } from 'aws-amplify';
+import { Storage } from 'aws-amplify';
 import "@aws-amplify/ui-react/styles.css";
 import { FileOpen } from "@mui/icons-material";
 
@@ -34,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function stringToColor(string) {
+export function stringToColor(string) {
   let hash = 0;
   let i;
 
@@ -54,7 +57,7 @@ function stringToColor(string) {
   return color;
 }
 
-function stringAvatar(name) {
+export function stringAvatar(name) {
   return {
     sx: {
       bgcolor: stringToColor(name),
@@ -116,6 +119,28 @@ const Navbar = ({
     setAnchorEl(null);
   };
 
+  const [avatarImage, setAvatarImage] = React.useState(null);
+
+  React.useEffect(() => {
+    fetchAvatarImage();
+  }, []);
+
+  /** 
+   * Calling the AWS Database to get the avatar image of the 
+   * user and putting it on the profile page. Called when we
+   * reload/load the page and when an avatar image is 
+   * uploaded  
+   * */
+  const fetchAvatarImage = async () => {
+    try {
+      const user = await Auth.currentAuthenticatedUser();
+      const avatarImageUrl = await Storage.get("users/"+ user.username + '/avatar.jpg');
+      setAvatarImage(avatarImageUrl);
+    } catch (error) {
+      console.log('Error fetching avatar image:', error);
+    }
+  };
+
   return (
     <AppBar position="absolute" className={classes.appBar} open={showDrawer} rightopen={showRightDrawer}>
       <Toolbar>
@@ -147,8 +172,8 @@ const Navbar = ({
         <Authenticator>
           {({ signOut, user }) => (
             <React.Fragment>
-              <IconButton sx={{ p: 0 }} onClick={handleClick}>
-                <Avatar {...stringAvatar(user.username)} />
+              <IconButton onClick={handleClick}>
+                <Avatar src={avatarImage} alt="Avatar" {...stringAvatar(user.username)} />
               </IconButton>
               <Menu
                 anchorEl={anchorEl}
@@ -185,9 +210,11 @@ const Navbar = ({
                 transformOrigin={{ horizontal: "right", vertical: "top" }}
                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
               >
-                <MenuItem onClick={handleClose}>
-                  <Avatar /> Profile
-                </MenuItem>
+                <Link to="/profile">
+                  <MenuItem>
+                    <Avatar/> Profile
+                  </MenuItem>
+                </Link>
                 <MenuItem onClick={signOut}>
                   <ListItemIcon>
                     <Logout fontSize="small" />

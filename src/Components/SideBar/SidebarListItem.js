@@ -30,6 +30,11 @@ const useStyles = makeStyles((theme) => ({
     overflowX: "hidden",
     textOverflow: "ellipsis",
   },
+  tableNameText: {
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis'
+  }
 }));
 
 //  Collapsible ListItem Component for  SideBar
@@ -43,11 +48,11 @@ const SidebarListItem = ({ listItem, subtitle, icon }) => {
 
   return (
     <>
-      <ListItem button component="li" onClick={toggleListItem}>
+      <ListItem title={tableName} button component="li" onClick={toggleListItem}>
         <ListItemIcon>
           {icon ? icon : <TableChartOutlinedIcon fontSize="small" />}
         </ListItemIcon>
-        <ListItemText>
+        <ListItemText className={classes.tableNameText}>
           <Typography variant="body1">
             <Box
               component="span"
