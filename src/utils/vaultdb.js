@@ -187,7 +187,7 @@ async function addCatalogue(catalogueName) {
 
     Configuration.setCatalog(catalogueName);
 
-    const result = await invokeLambdaFunction("execute-query", query, "query");
+    const result = await invokeLambdaFunction("execute-query", query, "create-catalog");
 
     console.log(result);
   } catch (error) {
