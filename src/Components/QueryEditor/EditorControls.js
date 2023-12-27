@@ -35,6 +35,8 @@ const EditorControls = ({
   editorTabs = [],
   updateEditorTabs = noop,
   onRunQuery = noop,
+  exportButtonDisabled = true,
+  activeQuery = ''
 }) => {
   const classes = useStyles();
 
@@ -62,8 +64,10 @@ const EditorControls = ({
           Run Query
         </Button>
         <MenuButton
+          disabled={exportButtonDisabled}
+          activeQuery={activeQuery}
           title="EXPORT"
-          menuItems={["CSV File", "XML File", "JSON File"]}
+          menuItems={["CSV File"/*, "JSON File", "Parquet File", "Excel File"*/]} // TODO: Try to figure out a way to export these kinds of files
         />
       </Box>
     </Paper>
@@ -75,4 +79,6 @@ EditorControls.propTypes = {
   editorTabs: PropTypes.array,
   updateEditorTabs: PropTypes.func.isRequired,
   onRunQuery: PropTypes.func.isRequired,
+  exportButtonDisabled: PropTypes.bool,
+  activeQuery: PropTypes.string
 };

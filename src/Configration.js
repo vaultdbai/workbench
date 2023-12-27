@@ -3,6 +3,7 @@ import AWS from "aws-sdk";
 
 const Configration = (function () {
   var application = "";
+  var user_bucket = "";
   var userPoolId = "";
   var identityPoolId = "";
   var selectedCatalog = "test";
@@ -11,6 +12,10 @@ const Configration = (function () {
 
   var getName = function () {
     return application; // Or pull this from cookie/localStorage
+  };
+
+  var getUserBucket = function () {
+    return user_bucket; // Or pull this from cookie/localStorage
   };
 
   var getToken = function () {
@@ -33,10 +38,11 @@ const Configration = (function () {
     return selectedSchema; // return database schema
   };
 
-  var configure = function (name, region, poolid, clientid, identity_pool) {
+  var configure = function (name, region, poolid, clientid, identity_pool, user_bucket_name) {
     application = name;
     userPoolId = poolid;
     identityPoolId = identity_pool;
+    user_bucket = user_bucket_name;
     // Configure Amplify in index file or root file
     Amplify.configure({
       Auth: {
@@ -44,6 +50,12 @@ const Configration = (function () {
         userPoolId: poolid,
         userPoolWebClientId: clientid,
       },
+      Storage: {
+        AWSS3: {
+          bucket: window.USER_BUCKET,
+          region: window.REGION
+        }
+      }
     });
 
     AWS.config.region = region; // Region
@@ -70,6 +82,7 @@ const Configration = (function () {
     getCatalog: getCatalog,
     getSchema: getSchema,
     getName: getName,
+    getUserBucket: getUserBucket,
     getToken: getToken,
     configure: configure,
     setCatalog,

@@ -8,7 +8,7 @@ const invokeLambdaFunction = (functionName, query, eventType) => {
     payload: query,
     catalog: Configration.getCatalog(),
     database: Configration.getSchema(), 
-    eventType: eventType
+    RequestType: eventType
   };
 
   const lambda = new AWS.Lambda();

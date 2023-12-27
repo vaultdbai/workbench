@@ -36,7 +36,7 @@ const EmptyState = ({
       >
         {title && <Typography variant={titleVariant}>{title}</Typography>}
         {subtitle && (
-          <Typography variant={subtitleVariant}>{subtitle}</Typography>
+          <Typography sx={{ whiteSpace: 'normal' }} variant={subtitleVariant}>{subtitle}</Typography>
         )}
       </Box>
     </Paper>

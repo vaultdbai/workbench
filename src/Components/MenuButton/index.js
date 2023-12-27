@@ -7,9 +7,19 @@ import Menu from "@mui/material/Menu";
 import Button from "@mui/material/Button";
 import { noop } from "utils/constants/common";
 import PropTypes from "prop-types";
+import { exportQueryResults } from "utils/vaultdb";
+import { useAuthenticator } from "@aws-amplify/ui-react";
 
-const MenuButton = ({ title = "", menuItems = [], onMenuItemClick = noop }) => {
+const MenuButton = ({
+  title = "",
+  menuItems = [],
+  onMenuItemClick = noop,
+  disabled = true,
+  activeQuery = ''
+}) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const { user } = useAuthenticator((context) => [context.user]);
 
   const classes = useMenuStyles();
 
@@ -23,6 +33,8 @@ const MenuButton = ({ title = "", menuItems = [], onMenuItemClick = noop }) => {
 
   const handleMenuItemClick = (item) => {
     onMenuItemClick(item);
+    console.log(item);
+    exportQueryResults(activeQuery, item, user.username);
     handleClose();
   };
 
@@ -35,6 +47,7 @@ const MenuButton = ({ title = "", menuItems = [], onMenuItemClick = noop }) => {
         aria-controls="simple-menu"
         aria-haspopup="true"
         onClick={handleClick}
+        disabled={disabled}
       >
         <GetAppRoundedIcon className={classes.downloadIcon} />
         <span>{title}</span>
@@ -79,4 +92,6 @@ MenuButton.propTypes = {
   title: PropTypes.string.isRequired,
   menuItems: PropTypes.array.isRequired,
   onMenuItemClick: PropTypes.func,
+  disabled: PropTypes.bool,
+  activeQuery: PropTypes.string
 };

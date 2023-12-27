@@ -1,6 +1,7 @@
 import ImportFormDialog from "Components/ImportFormDialog";
 import Navbar from "Components/Navbar";
 import SideBar from "Components/SideBar";
+import FileSideBar from "Components/FileSideBar";
 import Vaultdb from "Containers/Vaultdb";
 import HomePageLayout from "layouts/HomePageLayout";
 import { useCallback, useMemo, useState, useEffect } from "react";
@@ -8,6 +9,7 @@ import { useAuthenticator } from "@aws-amplify/ui-react";
 import Configration from "Configration";
 import ErrorBoundary from "Components/ErrorBoundary";
 import { AppContextProvider } from "context/AppContext";
+import { Storage } from 'aws-amplify';
 import { getTablesMetaData, getCataloguesMetaData, addCatalogue } from "utils/vaultdb";
 
 /**
@@ -19,7 +21,9 @@ import { getTablesMetaData, getCataloguesMetaData, addCatalogue } from "utils/va
 const Home = () => {
   // Sidebar State to toggle drawer
   const [showDrawer, setShowDrawer] = useState(true);
+  const [showRightDrawer, setShowRightDrawer] = useState(false);
   const [tablesData, setTablesData] = useState({});
+  const [exportedFilesData, setExportedFilesData] = useState([]);
   const [catalogueData, setCatalogData] = useState([]);
 
   const { user } = useAuthenticator((context) => [context.user]);
@@ -49,22 +53,27 @@ const Home = () => {
       setCatalogData(await getCataloguesMetaData());
     }
 
-    // Configure application
-    Configration.configure(
-      window.APPLICATION_NAME,
-      window.REGION,
-      window.USER_POOL_ID,
-      window.USER_POOL_APP_CLIENT_ID,
-      window.USER_IDENTITY_POOL_ID
-    );
     console.log(user);
     const idToken = user?.signInUserSession?.idToken;
     if (!idToken) console.log("User Does not exists");
     Configration.setUserCredentials(idToken);
     getCatalogues();
     getMetadata();
+
+    // Grab exported files names
+    Storage.list('users/' + user.username + '/exported_files/')
+      .then((result) => {
+        const files = result.results;
+        setExportedFilesData(files.slice(1)); // first file listed is an empty, nameless file.
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, [user]);
 
+  const toggleRightDrawerState = useCallback(() => {
+    setShowRightDrawer((show) => !show);
+  }, [setShowRightDrawer]);
 
   const toggleDrawerState = useCallback(() => {
     setShowDrawer((show) => !show);
@@ -104,8 +113,10 @@ const Home = () => {
           navBar={
             <Navbar
               onMenuButtonClick={toggleDrawerState}
+              onFileButtonClick={toggleRightDrawerState}
               onImportButtonClick={openImportDialog}
               showDrawer={showDrawer}
+              showRightDrawer={showRightDrawer}
             />
           }
           sideBar={
@@ -118,7 +129,15 @@ const Home = () => {
               setShowDrawer={setShowDrawer}
             />
           }
+          rightSideBar={
+            <FileSideBar
+              showDrawer={showRightDrawer}
+              items={exportedFilesData}
+              setShowDrawer={setShowRightDrawer}
+            />
+          }
           showDrawer={showDrawer}
+          showRightDrawer={showRightDrawer}
         >
           {/* Content  for the Home page*/}
           <Vaultdb />

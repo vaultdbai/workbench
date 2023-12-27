@@ -21,6 +21,7 @@ import { Authenticator } from "@aws-amplify/ui-react";
 import { Auth } from 'aws-amplify';
 import { Storage } from 'aws-amplify';
 import "@aws-amplify/ui-react/styles.css";
+import { FileOpen } from "@mui/icons-material";
 
 // Navbar styles
 const useStyles = makeStyles((theme) => ({
@@ -65,9 +66,11 @@ export function stringAvatar(name) {
   };
 }
 
+// Nav bar styles changes width depending on whether either or both 
+// Sidebars are open or not.
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
+})(({ theme, open, rightopen }) => ({
   transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -80,12 +83,31 @@ const AppBar = styled(MuiAppBar, {
       duration: theme.transitions.duration.enteringScreen,
     }),
   }),
+  ...(rightopen && {
+    width: `calc(100% - ${DRAWER_WIDTH}px)`,
+    marginRight: `${DRAWER_WIDTH}px`,
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+  ...(open && rightopen && {
+    width: `calc(100% - ${2 * DRAWER_WIDTH}px)`,
+    marginLeft: `${DRAWER_WIDTH}px`,
+    marginRight: `${DRAWER_WIDTH}px`,
+    transition: theme.transitions.create(["margin", "width"], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
 }));
 
 const Navbar = ({
   onMenuButtonClick = noop,
   onImportButtonClick = noop,
+  onFileButtonClick = noop,
   showDrawer = true,
+  showRightDrawer = false
 }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -120,7 +142,7 @@ const Navbar = ({
   };
 
   return (
-    <AppBar position="absolute" className={classes.appBar} open={showDrawer}>
+    <AppBar position="absolute" className={classes.appBar} open={showDrawer} rightopen={showRightDrawer}>
       <Toolbar>
         <IconButton
           className={classes.menuButton}
@@ -203,6 +225,15 @@ const Navbar = ({
             </React.Fragment>
           )}
         </Authenticator>
+        <IconButton
+          sx={{marginLeft: "15px"}}
+          className={classes.menuButton}
+          onClick={onFileButtonClick}
+          edge="start"
+          aria-label="filebar menu"
+        >
+          <FileOpen/>
+        </IconButton>
       </Toolbar>
     </AppBar>
   );
@@ -214,4 +245,5 @@ Navbar.propTypes = {
   onMenuButtonClick: PropTypes.func.isRequired,
   onImportButtonClick: PropTypes.func.isRequired,
   showDrawer: PropTypes.bool.isRequired,
+  showRightDrawer: PropTypes.bool.isRequired
 };

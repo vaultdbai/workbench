@@ -1,6 +1,6 @@
 {
   "short_name": "VaultDB",
-  "name": "Worlds Most secure and cheapest database",
+  "name": "Worlds Most secure and cheapest inprocess database for IOT and AI",
   "icons": [
     {
       "src": "favicon.ico",

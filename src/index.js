@@ -1,3 +1,4 @@
+import Configuration from "Configration";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "Containers/App";
@@ -7,27 +8,17 @@ import CssBaseline from "@mui/material/CssBaseline";
 import theme from "themes/default_theme";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Authenticator } from "@aws-amplify/ui-react";
-import { Amplify } from "aws-amplify";
-import AWS from "aws-sdk";
 import ProfilePage from "Components/ProfilePage";
 
 // Configure Amplify in index file or root file
-Amplify.configure({
-  Auth: {
-    identityPoolId: window.USER_IDENTITY_POOL_ID,
-    region: window.REGION,
-    userPoolId: window.USER_POOL_ID,
-    userPoolWebClientId: window.USER_POOL_APP_CLIENT_ID,
-  },
-  Storage: {
-    AWSS3: {
-      bucket: window.USER_BUCKET,
-      region: window.REGION
-    }
-  }
-});
-
-AWS.config.region = window.REGION; // Region
+Configuration.configure(
+  window.APPLICATION_NAME,
+  window.REGION,
+  window.USER_POOL_ID,
+  window.USER_POOL_APP_CLIENT_ID,
+  window.USER_IDENTITY_POOL_ID,
+  window.USER_BUCKET
+)
 
 const container = document.getElementById("root");
 
