@@ -40,6 +40,8 @@ const Configration = (function () {
 
   var configure = function (name, region, poolid, clientid, identity_pool, user_bucket_name) {
     application = name;
+    selectedCatalog= application;
+    selectedSchema = application;
     userPoolId = poolid;
     identityPoolId = identity_pool;
     user_bucket = user_bucket_name;
