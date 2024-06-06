@@ -27,11 +27,24 @@ jobs:
         with:
           cmd: build
 
-      - name: Deploy to S3
-        uses: shallwefootball/s3-upload-action@master
+      - uses: vitorsgomes/s3-rm-action@master
+        name: cleanup s3 folder workbench
+        with:
+          args: --recursive
+        env:
+          AWS_S3_BUCKET: ${{ secrets.AWS_BUCKET }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.S3_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          PATH_TO_DELETE: 'workbench'
+  
+      - uses: shallwefootball/s3-upload-action@master
+        name: Upload S3
+        id: S3
         with:
           aws_key_id: ${{ secrets.S3_ID }}
           aws_secret_access_key: ${{ secrets.S3_KEY}}
           aws_bucket: ${{ secrets.AWS_BUCKET }}
           source_dir: 'build'
-          destination_dir: 'release'
+          destination_dir: 'workbench'
+          
