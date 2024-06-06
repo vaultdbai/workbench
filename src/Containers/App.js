@@ -37,7 +37,7 @@ function App() {
       onSignOut={handleSignOut}
       onStateChange={(authState) => console.log(authState)}
       slot="sign-in"
-      hideSignUp
+      signUpAttributes={[]}
     >
       <Home />
     </Authenticator>
